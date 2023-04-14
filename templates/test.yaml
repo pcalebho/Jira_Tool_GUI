@@ -1,0 +1,16 @@
+site: "https://bastiansolutionslab1.atlassian.net"
+email: "cho@bastiansolutions.com"
+defaults:
+    sprint: "active"
+    board: " Bastian R&D Overhead:  Scrum Board"
+    assignee: self
+    issuetype: Story
+    description: "Meetings for various projects."
+    customfield_10051: "Attend meetings."  # acceptance_criteria
+issues:
+-   project: BRND
+    summary: "Test"
+    components: ["DAL-MEETINGS"]
+    epic: BRND-1903
+    timetracking:
+        originalEstimate: 0h

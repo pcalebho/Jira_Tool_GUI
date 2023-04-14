@@ -1,0 +1,36 @@
+site: "https://bastiansolutionslab1.atlassian.net"
+email: "cho@bastiansolutions.com"
+defaults:
+    sprint: "future"
+    board: " Bastian R&D Overhead:  Scrum Board"
+    assignee: self
+    issuetype: Story
+    description: "Meetings for various projects."
+    customfield_10051: "Attend meetings."  # acceptance_criteria
+issues:
+-   project: BRND
+    summary: "Caleb Non-Billable Meetings"
+    components: ["DAL-MEETINGS"]
+    epic: BRND-1903
+    timetracking:
+        originalEstimate: 4h
+-   project: ULTRA
+    summary: "Caleb Unloader Meetings"
+    components: ["MECH"]
+    epic: ULTRA-217
+    timetracking:
+        originalEstimate: 2h
+-   project: ULTRA
+    summary: "Caleb Loader Meetings"
+    components: ["MECH"]
+    epic: ULTRA-218
+    timetracking:
+        originalEstimate: 2h
+-   project: BRND
+    summary: "Caleb Non-Billable Admin"
+    components: ["DAL-ADMIN & PAPERWORK"]
+    epic: BRND-1706
+    description: "This is for non-billable paperwork and admin."
+    customfield_10051: "Complete necessary paperwork."  # acceptance_criteria
+    timetracking:
+        originalEstimate: 2h
