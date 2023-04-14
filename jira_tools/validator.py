@@ -12,7 +12,6 @@ from jira import JIRA, JIRAError
 class ValidationError(Exception):
     pass
 
-
 class Validator(object):
     issuetypes = ('Story', 'Task')
 
