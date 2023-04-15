@@ -19,6 +19,8 @@ parts/
 sdist/
 var/
 jira_tools/
+secrets/
+templates/
 wheels/
 share/python-wheels/
 *.egg-info/
