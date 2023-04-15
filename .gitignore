@@ -1,3 +1,9 @@
+#repo folders and files
+jira_tools/
+secrets/
+templates/
+changestate.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -18,9 +24,7 @@ lib64/
 parts/
 sdist/
 var/
-jira_tools/
-secrets/
-templates/
+dist/
 wheels/
 share/python-wheels/
 *.egg-info/

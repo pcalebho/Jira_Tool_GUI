@@ -29,7 +29,6 @@ from jira_tools.validator import Validator
               help="Prepend the sprint code to the task with a dash")
 @click.argument('token', type=click.File('r'))
 @click.argument('config', type=click.File('r'))
-
 def upload(closed_sprints, prompt, duplicates, fatal_errors, verbose, pageview,
            dry_run, prepend_sprint, token, config):
     """Use TOKEN to connect to Jira site and upload issues from CONFIG."""
