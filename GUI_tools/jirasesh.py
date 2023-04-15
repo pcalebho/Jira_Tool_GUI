@@ -8,6 +8,7 @@ from validator import Validator
 import default_auth_constants as constants
 
 class JiraInst():
+    #Constructor
     def __init__(self):
         #Connect to jira and initiate session
         self.jira_session = JIRA(constants.SITE, basic_auth=(constants.EMAIL, constants.API_TOKEN))
@@ -18,27 +19,37 @@ class JiraInst():
             self._states = config["states"]
 
     #Gets JIRA open or future issues for a given user
-    def get_issues(self, assignee):
+    def get_issues(self, assignee, search_state = None):
         issue_list = {}
-        for s in self._states:
-            search_state = '\"' + s + '\"'
-            query_JQL = 'assignee = \"' + assignee + '\" and sprint in (openSprints(),futureSprints()) and status = ' + search_state
-            issue_list[s] = self.jira_session.search_issues(query_JQL)
+
+        if search_state is None:
+            for s in self._states:
+                state_in_JQL = '\"' + s + '\"'
+                query_JQL = 'assignee = \"' + assignee + '\" and sprint in (openSprints(),futureSprints()) and status = ' + state_in_JQL
+                issue_list[s] = self.jira_session.search_issues(query_JQL)
+        else:
+            state_in_JQL = '\"' + search_state + '\"'
+            query_JQL = 'assignee = \"' + assignee + '\" and sprint in (openSprints(),futureSprints()) and status = ' + state_in_JQL
+            issue_list = self.jira_session.search_issues(query_JQL)
 
         return issue_list
     
     #Changes states of issues for a given user. 
-    def change_state(self, assignee, final_state, initial_state = "To Do", issues_2_change = None):            
+    def change_state(self, assignee, final_state, initial_state = None, issues_2_change = None):            
+        if initial_state is None:
+            initial_state = self._states[0]
+
         if issues_2_change is None:
-            issue_list = get_issues(assignee)[initial_state]
+            issue_list = self.get_issues(assignee,initial_state)
         else:
             issue_list = issues_2_change
 
         try:
             for issue in issue_list:    
-                jira_session.transition_issue(issue.key, final_state)
+                self.jira_session.transition_issue(issue.key, final_state)
+            return True
         except:
-            pass
+            return False
             
     def  log_hours(self, l0, ca, jira_session):    
         if (l0 or ca):
@@ -145,4 +156,8 @@ class JiraInst():
 if __name__ == "__main__":
     a = JiraInst()
     print(a._states)
-    print(a.get_issues('Caleb Ho'))
+    # issue = a.get_issues('Caleb Ho','Blocked')
+    issue = a.get_issues('Caleb Ho','Blocked')
+    print(issue)
+    # print(a.change_state(assignee = 'Caleb Ho', final_state = 'To Do', issues_2_change = issue))
+    print(a.change_state(assignee = 'Caleb Ho', final_state = 'To Do'))
