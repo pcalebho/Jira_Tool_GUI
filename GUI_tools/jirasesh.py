@@ -30,7 +30,7 @@ class JiraInst():
         else:
             state_in_JQL = '\"' + search_state + '\"'
             query_JQL = 'assignee = \"' + assignee + '\" and sprint in (openSprints(),futureSprints()) and status = ' + state_in_JQL
-            issue_list = self.jira_session.search_issues(query_JQL)
+            issue_list[search_state] = self.jira_session.search_issues(query_JQL)
 
         return issue_list
     
@@ -156,8 +156,8 @@ class JiraInst():
 if __name__ == "__main__":
     a = JiraInst()
     print(a._states)
+    issue = a.get_issues('Caleb Ho','To Do')
     # issue = a.get_issues('Caleb Ho','Blocked')
-    issue = a.get_issues('Caleb Ho','Blocked')
     print(issue)
     # print(a.change_state(assignee = 'Caleb Ho', final_state = 'To Do', issues_2_change = issue))
-    print(a.change_state(assignee = 'Caleb Ho', final_state = 'To Do'))
+    print(a.change_state(assignee = 'Caleb Ho', initial_state = 'To Do', final_state = 'Blocked'))
