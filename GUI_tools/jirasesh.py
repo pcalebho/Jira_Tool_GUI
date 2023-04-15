@@ -15,45 +15,32 @@ class JiraInst():
         #import configure varibles
         with open('config_files/config.yaml', 'r') as file:
             config = yaml.safe_load(file)
-            self.states = config["states"]
+            self._states = config["states"]
 
     #Gets JIRA open or future issues for a given user
-    def get_issues(self, username):
+    def get_issues(self, assignee):
         issue_list = {}
-        for s in self.states:
+        for s in self._states:
             search_state = '\"' + s + '\"'
-            query_JQL = 'assignee = \"' + username + '\" and sprint in openSprints() and status = ' + search_state
+            query_JQL = 'assignee = \"' + assignee + '\" and sprint in (openSprints(),futureSprints()) and status = ' + search_state
             issue_list[s] = self.jira_session.search_issues(query_JQL)
 
         return issue_list
     
-    def change_state(self, initial_state, final_state, all_issues): 
+    #Changes states of issues for a given user. 
+    def change_state(self, assignee, final_state, initial_state = "To Do", issues_2_change = None):            
+        if issues_2_change is None:
+            issue_list = get_issues(assignee)[initial_state]
+        else:
+            issue_list = issues_2_change
 
-        if (transisiton == 1):
+        try:
+            for issue in issue_list:    
+                jira_session.transition_issue(issue.key, final_state)
+        except:
             pass
             
-        issue_list = self.jira_session.search_issues('assignee = currentUser() \
-        and sprint in openSprints() and status = '+ IssuesStatus)
-        
-        #If it doesn't exist
-        if len(issue_list) == 0:
-            issue_list = jira_session.search_issues('assignee = currentUser() \
-            and sprint in futureSprints() and status = '+ IssuesStatus)
-
-        #Search Issues
-        for issue in issue_list:
-            #Transitions       
-            if ca:
-                jira_session.transition_issue(issue.key, "Resolved")
-            elif not l0:
-                jira_session.transition_issue(issue.key, "In Progress")
-            
-            #add 0 hours
-            if (l0 or not ca): 
-                jira_session.add_worklog(issue.key, timeSpent="0h")
-                jira_session.add_worklog(issue.key, timeSpent="0h", started = (datetime.now() + timedelta(days = 7)))            #add 0 hours a week later
-
-    def log_hours(self, l0, ca, jira_session):    
+    def  log_hours(self, l0, ca, jira_session):    
         if (l0 or ca):
             IssuesStatus = "In Progress"
         else:
@@ -157,5 +144,5 @@ class JiraInst():
 
 if __name__ == "__main__":
     a = JiraInst()
-    print(a.states)
-    print(a.get_issues('Zach Hawkins'))
+    print(a._states)
+    print(a.get_issues('Caleb Ho'))
