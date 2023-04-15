@@ -5,7 +5,7 @@ from copy import deepcopy
 import pprint
 import re
 
-import click
+# import click
 from jira import JIRA, JIRAError
 
 
