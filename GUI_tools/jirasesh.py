@@ -13,17 +13,17 @@ class JiraInst():
 
     #Gets JIRA open or future issues for a given user
     def get_issues(self, username):
+        #Depending on what your states 
         issue_list = {}
-        issue_list["To Do"] = jira_session.search_issues('assignee = ' + username + ' \
+        issue_list["To Do"] = self.jira_session.search_issues('assignee = ' + username + ' \
             and sprint in openSprints() and status = To Do')
-        issue_list["In Progress"] = jira_session.search_issues('assignee = ' + username + ' \
+        issue_list["In Progress"] = self.jira_session.search_issues('assignee = ' + username + ' \
             and sprint in openSprints() and status = In Progress')
-        issue_list["Resolved/Completed"] = jira_session.search_issues('assignee = ' + username + ' \
+        issue_list["Resolved/Completed"] = self.jira_session.search_issues('assignee = ' + username + ' \
             and sprint in openSprints() and status = Resolved/Completed')
-
         return issue_list
     
-    def change_all_status(self, transition, jira_session):
+    def change_state(self, transition, all_issues):
         """transisition meaning
         1: ToDo -> InProgress
         2: InProgress -> Resolved"""   
@@ -33,7 +33,7 @@ class JiraInst():
         else:
             IssuesStatus = "To Do"
             
-        issue_list = jira_session.search_issues('assignee = currentUser() \
+        issue_list = self.jira_session.search_issues('assignee = currentUser() \
         and sprint in openSprints() and status = '+ IssuesStatus)
         
         #If it doesn't exist
