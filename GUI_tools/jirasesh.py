@@ -4,14 +4,30 @@ import yaml
 import pprint
 from copy import deepcopy
 from jira import JIRA
-from jira_tools.validator import Validator
+from validator import Validator
 import default_auth_constants as constants
 
 class JiraInst():
     def __intit__(self):
         self.jira_session = JIRA(constants.SITE, basic_auth=(constants.EMAIL, constants.API_TOKEN))
 
-    def change_status(l0,ca, jira_session):    
+    #Gets JIRA open or future issues for a given user
+    def get_issues(self, username):
+        issue_list = {}
+        issue_list["To Do"] = jira_session.search_issues('assignee = ' + username + ' \
+            and sprint in openSprints() and status = To Do')
+        issue_list["In Progress"] = jira_session.search_issues('assignee = ' + username + ' \
+            and sprint in openSprints() and status = In Progress')
+        issue_list["Resolved/Completed"] = jira_session.search_issues('assignee = ' + username + ' \
+            and sprint in openSprints() and status = Resolved/Completed')
+
+        return issue_list
+    
+    def change_all_status(self, transition, jira_session):
+        """transisition meaning
+        1: ToDo -> InProgress
+        2: InProgress -> Resolved"""   
+
         if (l0 or ca):
             IssuesStatus = "In Progress"
         else:
@@ -25,8 +41,7 @@ class JiraInst():
             issue_list = jira_session.search_issues('assignee = currentUser() \
             and sprint in futureSprints() and status = '+ IssuesStatus)
 
-            
-    #Search Issues
+        #Search Issues
         for issue in issue_list:
             #Transitions       
             if ca:
@@ -39,7 +54,7 @@ class JiraInst():
                 jira_session.add_worklog(issue.key, timeSpent="0h")
                 jira_session.add_worklog(issue.key, timeSpent="0h", started = (datetime.now() + timedelta(days = 7)))            #add 0 hours a week later
 
-    def log_hours(l0,ca, jira_session):    
+    def log_hours(self, l0, ca, jira_session):    
         if (l0 or ca):
             IssuesStatus = "In Progress"
         else:
@@ -54,7 +69,7 @@ class JiraInst():
             and sprint in futureSprints() and status = '+ IssuesStatus)
 
             
-    #Search Issues
+        #Search Issues
         for issue in issue_list:
             #Transitions       
             if ca:
@@ -69,7 +84,7 @@ class JiraInst():
 
         click.echo("Done")
 
-    def upload(closed_sprints, prompt, duplicates, fatal_errors, verbose, pageview,
+    def upload(self, closed_sprints, prompt, duplicates, fatal_errors, verbose, pageview,
             dry_run, prepend_sprint, config):
         """Use TOKEN to connect to Jira site and upload issues from CONFIG."""
         # parse yaml into list of story, task, bugs
@@ -142,4 +157,4 @@ class JiraInst():
         return 0
 
 if __name__ == "__main__":
-    upload()
+    pass
