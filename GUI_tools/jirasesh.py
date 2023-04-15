@@ -30,7 +30,7 @@ class JiraInst():
         else:
             state_in_JQL = '\"' + search_state + '\"'
             query_JQL = 'assignee = \"' + assignee + '\" and sprint in (openSprints(),futureSprints()) and status = ' + state_in_JQL
-            issue_list[search_state] = self.jira_session.search_issues(query_JQL)
+            issue_list = self.jira_session.search_issues(query_JQL)
 
         return issue_list
     
@@ -159,5 +159,6 @@ if __name__ == "__main__":
     issue = a.get_issues('Caleb Ho','To Do')
     # issue = a.get_issues('Caleb Ho','Blocked')
     print(issue)
+    #To Do -> Blocked works but not vice versa for change_state
     # print(a.change_state(assignee = 'Caleb Ho', final_state = 'To Do', issues_2_change = issue))
-    print(a.change_state(assignee = 'Caleb Ho', initial_state = 'To Do', final_state = 'Blocked'))
+    print(a.change_state(assignee = 'Caleb Ho', final_state = 'Blocked', issues_2_change = issue))
