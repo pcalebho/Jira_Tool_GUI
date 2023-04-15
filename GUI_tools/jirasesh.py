@@ -51,35 +51,12 @@ class JiraInst():
         except:
             return False
             
-    def  log_hours(self, l0, ca, jira_session):    
-        if (l0 or ca):
-            IssuesStatus = "In Progress"
+    def  log_hours(self, hours, user, issue, started = None):
+        hours_JQL = hours + "h"    
+        if started is None:
+            self.jira_session.add_worklog(issue.key, timeSpent = hours_JQL)
         else:
-            IssuesStatus = "To Do"
-            
-        issue_list = jira_session.search_issues('assignee = currentUser() \
-        and sprint in openSprints() and status = '+ IssuesStatus)
-        
-        #If it doesn't exist
-        if len(issue_list) == 0:
-            issue_list = jira_session.search_issues('assignee = currentUser() \
-            and sprint in futureSprints() and status = '+ IssuesStatus)
-
-            
-        #Search Issues
-        for issue in issue_list:
-            #Transitions       
-            if ca:
-                jira_session.transition_issue(issue.key, "Resolved")
-            elif not l0:
-                jira_session.transition_issue(issue.key, "In Progress")
-            
-            #add 0 hours
-            if (l0 or not ca): 
-                jira_session.add_worklog(issue.key, timeSpent="0h")
-                jira_session.add_worklog(issue.key, timeSpent="0h", started = (datetime.now() + timedelta(days = 7)))            #add 0 hours a week later
-
-        click.echo("Done")
+            self.jira_session.add_worklog(issue.key, timeSpent = hours_JQL, started = started)            #add 0 hours a week later
 
     # def upload(self, closed_sprints, prompt, duplicates, fatal_errors, verbose, pageview,
     #         dry_run, prepend_sprint, config):
