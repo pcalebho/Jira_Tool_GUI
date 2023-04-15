@@ -8,30 +8,29 @@ from validator import Validator
 import default_auth_constants as constants
 
 class JiraInst():
-    def __intit__(self):
+    def __init__(self):
+        #Connect to jira and initiate session
         self.jira_session = JIRA(constants.SITE, basic_auth=(constants.EMAIL, constants.API_TOKEN))
+
+        #import configure varibles
+        with open('config_files/config.yaml', 'r') as file:
+            config = yaml.safe_load(file)
+            self.states = config["states"]
 
     #Gets JIRA open or future issues for a given user
     def get_issues(self, username):
-        #Depending on what your states 
         issue_list = {}
-        issue_list["To Do"] = self.jira_session.search_issues('assignee = ' + username + ' \
-            and sprint in openSprints() and status = To Do')
-        issue_list["In Progress"] = self.jira_session.search_issues('assignee = ' + username + ' \
-            and sprint in openSprints() and status = In Progress')
-        issue_list["Resolved/Completed"] = self.jira_session.search_issues('assignee = ' + username + ' \
-            and sprint in openSprints() and status = Resolved/Completed')
+        for s in self.states:
+            search_state = '\"' + s + '\"'
+            query_JQL = 'assignee = \"' + username + '\" and sprint in openSprints() and status = ' + search_state
+            issue_list[s] = self.jira_session.search_issues(query_JQL)
+
         return issue_list
     
-    def change_state(self, transition, all_issues):
-        """transisition meaning
-        1: ToDo -> InProgress
-        2: InProgress -> Resolved"""   
+    def change_state(self, initial_state, final_state, all_issues): 
 
-        if (l0 or ca):
-            IssuesStatus = "In Progress"
-        else:
-            IssuesStatus = "To Do"
+        if (transisiton == 1):
+            pass
             
         issue_list = self.jira_session.search_issues('assignee = currentUser() \
         and sprint in openSprints() and status = '+ IssuesStatus)
@@ -84,77 +83,79 @@ class JiraInst():
 
         click.echo("Done")
 
-    def upload(self, closed_sprints, prompt, duplicates, fatal_errors, verbose, pageview,
-            dry_run, prepend_sprint, config):
-        """Use TOKEN to connect to Jira site and upload issues from CONFIG."""
-        # parse yaml into list of story, task, bugs
-        config = yaml.load(config, Loader=yaml.Loader)
-        issues = []
+    # def upload(self, closed_sprints, prompt, duplicates, fatal_errors, verbose, pageview,
+    #         dry_run, prepend_sprint, config):
+    #     """Use TOKEN to connect to Jira site and upload issues from CONFIG."""
+    #     # parse yaml into list of story, task, bugs
+    #     config = yaml.load(config, Loader=yaml.Loader)
+    #     issues = []
 
-        try:
-            for issue_cfg in config['issues']:
-                issue = deepcopy(config['defaults'])
-                issue.update(issue_cfg)
-                issues.append(issue)
+    #     try:
+    #         for issue_cfg in config['issues']:
+    #             issue = deepcopy(config['defaults'])
+    #             issue.update(issue_cfg)
+    #             issues.append(issue)
 
-        except KeyError as err:
-            click.secho("Config is missing key '{}'".format(err.args[0]), err=True)
+    #     except KeyError as err:
+    #         click.secho("Config is missing key '{}'".format(err.args[0]), err=True)
 
-        # validate issues
-        v = Validator(jira, fatal_errors=fatal_errors, verbose=verbose,
-                    duplicates=duplicates, closed_sprints=closed_sprints,
-                    prepend_sprint=prepend_sprint)
-        vissues = v.validate(issues)
+    #     # validate issues
+    #     v = Validator(jira, fatal_errors=fatal_errors, verbose=verbose,
+    #                 duplicates=duplicates, closed_sprints=closed_sprints,
+    #                 prepend_sprint=prepend_sprint)
+    #     vissues = v.validate(issues)
 
-        if len(vissues) == 0:
-            click.secho("No issues to upload after validation.", err=True, fg='red')
-            return
+    #     if len(vissues) == 0:
+    #         click.secho("No issues to upload after validation.", err=True, fg='red')
+    #         return
 
-        # Handle various options
-        result = ("Validated {} issues in projects {}. "
-                .format(len(vissues), set(vi['project'] for vi in vissues)))
-        if pageview:
-            click.echo_via_pager(result + "\n\n"
-                + pprint.pformat({issue['summary']: issue for issue in vissues}))
-        if dry_run or (prompt and not click.confirm("\n" + result + "Proceed?")):
-            return
+    #     # Handle various options
+    #     result = ("Validated {} issues in projects {}. "
+    #             .format(len(vissues), set(vi['project'] for vi in vissues)))
+    #     if pageview:
+    #         click.echo_via_pager(result + "\n\n"
+    #             + pprint.pformat({issue['summary']: issue for issue in vissues}))
+    #     if dry_run or (prompt and not click.confirm("\n" + result + "Proceed?")):
+    #         return
 
-        results = []
-        with click.progressbar(
-            vissues,
-            label='Creating issues via the Jira API...',
-            # item_show_func=lambda i: i['summary'],
-        ) as bar:
-            for issue in bar:
-                sprint_id = issue.pop('sprint').id
-                epic_id = issue.pop('epic').id
-                board = issue.pop('board')
+    #     results = []
+    #     with click.progressbar(
+    #         vissues,
+    #         label='Creating issues via the Jira API...',
+    #         # item_show_func=lambda i: i['summary'],
+    #     ) as bar:
+    #         for issue in bar:
+    #             sprint_id = issue.pop('sprint').id
+    #             epic_id = issue.pop('epic').id
+    #             board = issue.pop('board')
 
-                res = jira.create_issue(issue)
-                results.append(res)
-                jira.add_issues_to_sprint(sprint_id=sprint_id,
-                                        issue_keys=[res.key])
+    #             res = jira.create_issue(issue)
+    #             results.append(res)
+    #             jira.add_issues_to_sprint(sprint_id=sprint_id,
+    #                                     issue_keys=[res.key])
 
-                # the add_issues_to_epic API appears to be deprecated
-                try:
-                    jira.add_issues_to_epic(epic_id=epic_id,
-                                            issue_keys=[res.key])
-                except NotImplementedError:
-                    res.update(fields={'parent': {'id': epic_id}})
+    #             # the add_issues_to_epic API appears to be deprecated
+    #             try:
+    #                 jira.add_issues_to_epic(epic_id=epic_id,
+    #                                         issue_keys=[res.key])
+    #             except NotImplementedError:
+    #                 res.update(fields={'parent': {'id': epic_id}})
 
-                jira.add_worklog(res.key, timeSpent="0h")
-                #jira.transitions(res)
+    #             jira.add_worklog(res.key, timeSpent="0h")
+    #             #jira.transitions(res)
 
                 
-        for res in results:
-            click.secho("Created issue {!r}".format(res))
+    #     for res in results:
+    #         click.secho("Created issue {!r}".format(res))
 
 
-        # if failed, prompt to launch editor
-        # run sprint selector
-        # if dry-run or verbose, print final issues
-        # if not dry-run upload with jira authenticator
-        return 0
+    #     # if failed, prompt to launch editor
+    #     # run sprint selector
+    #     # if dry-run or verbose, print final issues
+    #     # if not dry-run upload with jira authenticator
+    #     return 0
 
 if __name__ == "__main__":
-    pass
+    a = JiraInst()
+    print(a.states)
+    print(a.get_issues('Zach Hawkins'))
