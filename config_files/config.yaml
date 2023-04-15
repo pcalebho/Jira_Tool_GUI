@@ -1,0 +1,5 @@
+states:
+  - To Do
+  - In Progress
+  - Resolved/Completed
+  - Blocked
