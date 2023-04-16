@@ -73,18 +73,19 @@ class JiraInst():
                 issue = deepcopy(config['defaults'])
                 issue.update(issue_cfg)
                 issues.append(issue)
-
         except KeyError as err:
-            click.secho("Config is missing key '{}'".format(err.args[0]), err=True)
+            #add error handling
+            pass
+            # click.secho("Config is missing key '{}'".format(err.args[0]), err=True)
 
         # validate issues
-        v = Validator(jira, fatal_errors=fatal_errors, verbose=verbose,
+        v = Validator(self.jira_session, fatal_errors=fatal_errors, verbose=verbose,
                     duplicates=duplicates, closed_sprints=closed_sprints,
                     prepend_sprint=prepend_sprint)
         vissues = v.validate(issues)
 
+        #check if issues are empty
         if len(vissues) == 0:
-            click.secho("No issues to upload after validation.", err=True, fg='red')
             return
 
         # Handle various options
@@ -122,15 +123,8 @@ class JiraInst():
                 jira.add_worklog(res.key, timeSpent="0h")
                 #jira.transitions(res)
 
-                
-        for res in results:
-            click.secho("Created issue {!r}".format(res))
+    
 
-
-        # if failed, prompt to launch editor
-        # run sprint selector
-        # if dry-run or verbose, print final issues
-        # if not dry-run upload with jira authenticator
         return 0
 
 if __name__ == "__main__":

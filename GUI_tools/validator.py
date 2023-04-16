@@ -4,8 +4,6 @@ import pdb
 from copy import deepcopy
 import pprint
 import re
-
-# import click
 from jira import JIRA, JIRAError
 
 
