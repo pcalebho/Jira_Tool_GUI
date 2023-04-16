@@ -26,11 +26,11 @@ class JiraInst():
             for s in self._states:
                 state_in_JQL = '\"' + s + '\"'
                 query_JQL = 'assignee = \"' + assignee + '\" and sprint in (openSprints(),futureSprints()) and status = ' + state_in_JQL
-                issue_list[s] = self.jira_session.search_issues(query_JQL, fields = 'summary')
+                issue_list[s] = self.jira_session.search_issues(query_JQL)
         else:
             state_in_JQL = '\"' + search_state + '\"'
             query_JQL = 'assignee = \"' + assignee + '\" and sprint in (openSprints(),futureSprints()) and status = ' + state_in_JQL
-            issue_list = self.jira_session.search_issues(query_JQL, fields = 'summary')
+            issue_list = self.jira_session.search_issues(query_JQL)
 
         return issue_list
     
