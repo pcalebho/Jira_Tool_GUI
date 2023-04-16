@@ -5,19 +5,23 @@ import pprint
 from copy import deepcopy
 from jira import JIRA
 from validator import Validator
-import default_auth_constants as constants
 
 class JiraInst():
     #Constructor
-    def __init__(self):
-        #Connect to jira and initiate session
-        self.jira_session = JIRA(constants.SITE, basic_auth=(constants.EMAIL, constants.API_TOKEN))
-
+    def __init__(self, auth_file = None):
         #import configure varibles
         with open('config_files/config.yaml', 'r') as file:
             config = yaml.safe_load(file)
             self._states = config["states"]
 
+        #import authentication variables
+        with open('config_files/authentication.yml', 'r') as file:
+            auth = yaml.safe_load(file)
+
+        #Connect to jira and initiate session
+        self.jira_session = JIRA(auth['site'], basic_auth=(auth['email'], auth['token']))
+
+        
     #Gets JIRA open or future issues for a given user
     def get_issues(self, assignee, search_state = None):
         issue_list = {}
@@ -61,12 +65,12 @@ class JiraInst():
         except:
             pass
 
-    def upload(self, closed_sprints, prompt, duplicates, fatal_errors, verbose, pageview,
-            dry_run, prepend_sprint, issues_yml):
+    def upload(self, closed_sprints, prompt, duplicates, fatal_errors, prepend_sprint, issues_yml):
         """Use TOKEN to connect to Jira site and upload issues from CONFIG."""
         # parse yaml into list of story, task, bugs
         config = yaml.load(issues_yml, Loader=yaml.Loader)
         issues = []
+
 
         try:
             for issue_cfg in config['issues']:
@@ -76,54 +80,38 @@ class JiraInst():
         except KeyError as err:
             #add error handling
             pass
-            # click.secho("Config is missing key '{}'".format(err.args[0]), err=True)
+
 
         # validate issues
-        v = Validator(self.jira_session, fatal_errors=fatal_errors, verbose=verbose,
+        v = Validator(self.jira_session, fatal_errors=fatal_errors,
                     duplicates=duplicates, closed_sprints=closed_sprints,
                     prepend_sprint=prepend_sprint)
         vissues = v.validate(issues)
+
 
         #check if issues are empty
         if len(vissues) == 0:
             return
 
-        # Handle various options
-        result = ("Validated {} issues in projects {}. "
-                .format(len(vissues), set(vi['project'] for vi in vissues)))
-        if pageview:
-            click.echo_via_pager(result + "\n\n"
-                + pprint.pformat({issue['summary']: issue for issue in vissues}))
-        if dry_run or (prompt and not click.confirm("\n" + result + "Proceed?")):
-            return
 
+        #Add issues to sprint and epic
         results = []
-        with click.progressbar(
-            vissues,
-            label='Creating issues via the Jira API...',
-            # item_show_func=lambda i: i['summary'],
-        ) as bar:
-            for issue in bar:
-                sprint_id = issue.pop('sprint').id
-                epic_id = issue.pop('epic').id
-                board = issue.pop('board')
+        for issue in vissues:
+            sprint_id = issue.pop('sprint').id
+            epic_id = issue.pop('epic').id
+            board = issue.pop('board')
 
-                res = jira.create_issue(issue)
-                results.append(res)
-                jira.add_issues_to_sprint(sprint_id=sprint_id,
+            res = jira.create_issue(issue)
+            results.append(res)
+            jira.add_issues_to_sprint(sprint_id=sprint_id,
+                                    issue_keys=[res.key])
+
+            # the add_issues_to_epic API appears to be deprecated
+            try:
+                jira.add_issues_to_epic(epic_id=epic_id,
                                         issue_keys=[res.key])
-
-                # the add_issues_to_epic API appears to be deprecated
-                try:
-                    jira.add_issues_to_epic(epic_id=epic_id,
-                                            issue_keys=[res.key])
-                except NotImplementedError:
-                    res.update(fields={'parent': {'id': epic_id}})
-
-                jira.add_worklog(res.key, timeSpent="0h")
-                #jira.transitions(res)
-
-    
+            except NotImplementedError:
+                res.update(fields={'parent': {'id': epic_id}})   
 
         return 0
 
