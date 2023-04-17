@@ -5,7 +5,6 @@ import pprint
 from copy import deepcopy
 from jira import JIRA
 from validator import Validator
-import default_auth_constants as constants
 
 class JiraInst():
     #Constructor
