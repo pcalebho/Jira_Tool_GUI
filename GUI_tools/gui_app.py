@@ -1,125 +1,60 @@
 import tkinter as tk
-from tkinter import filedialog
-import os
+import tkinter.font as tkFont
 
 class App:
-    image_path = ""
-    img_list = []
+    def __init__(self, root):
+        #setting title
+        root.title("Auto Jira")
+        #setting window size
+        width=600
+        height=494
+        screenwidth = root.winfo_screenwidth()
+        screenheight = root.winfo_screenheight()
+        alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+        root.geometry(alignstr)
+        root.resizable(width=False, height=False)
 
-    def __init__(self, window, author, version):
-        frame_a = tk.Frame(window)
-        frame_b = tk.Frame(window)
+        GButton_289=tk.Button(root)
+        GButton_289["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times',size=10)
+        GButton_289["font"] = ft
+        GButton_289["fg"] = "#000000"
+        GButton_289["justify"] = "center"
+        GButton_289["text"] = "Browse"
+        GButton_289["relief"] = "flat"
+        GButton_289.place(x=40,y=30,width=70,height=25)
+        GButton_289["command"] = self.GButton_289_command
 
-        self.open_button = tk.Button(
-            master=frame_a,
-            text="Browse for PNG file",
-            height=1,
-            bg="white",
-            fg="black",
-            command=self.browse_file,
-            pady = 5
-        )
+        GLabel_147=tk.Label(root)
+        GLabel_147["bg"] = "#f2eeee"
+        ft = tkFont.Font(family='Times',size=10)
+        GLabel_147["font"] = ft
+        GLabel_147["fg"] = "#333333"
+        GLabel_147["justify"] = "center"
+        GLabel_147["text"] = "label"
+        GLabel_147.place(x=30,y=90,width=70,height=25)
 
-        self.shake_button = tk.Button(
-            master=frame_a,
-            text="Export Shake",
-            width=10,
-            height=1,
-            bg="white",
-            fg="black",
-            command=lambda: self.make_gif(movement="shake", main = window),
-            pady = 5
-        )
+        GListBox_842=tk.Listbox(root)
+        GListBox_842["borderwidth"] = "1px"
+        ft = tkFont.Font(family='Times',size=10)
+        GListBox_842["font"] = ft
+        GListBox_842["fg"] = "#333333"
+        GListBox_842["justify"] = "center"
+        GListBox_842.place(x=150,y=80,width=410,height=391)
 
-        self.spin_button = tk.Button(
-            master=frame_a,
-            text="Export Spin",
-            width=10,
-            height=1,
-            bg="white",
-            fg="black",
-            command=lambda: self.make_gif(movement="spin", main = window),
-            pady = 5
-        )
+        GMessage_865=tk.Message(root)
+        ft = tkFont.Font(family='Times',size=10)
+        GMessage_865["font"] = ft
+        GMessage_865["fg"] = "#333333"
+        GMessage_865["justify"] = "center"
+        GMessage_865["text"] = ""
+        GMessage_865["relief"] = "flat"
+        GMessage_865.place(x=140,y=30,width=433,height=30)
 
-        self.label_png = tk.Label(master=frame_b)
-        
-        self.label_instructions = tk.Label(
-            master=frame_a, 
-            text = "Works best on PNG\'s with transparent backgrounds",
-            fg= '#f00',
-            pady = 5
-        )
-        
-        self.label_author = tk.Label(master = window, text= author + ' - ' + version) 
-        
-        #pack all widgets into location
-        self.label_instructions.pack()
-        self.open_button.pack()
-        self.shake_button.pack()
-        self.spin_button.pack()
-        self.label_png.pack()
-        #pack label into bottom right corner
-        self.label_author.pack(side = 'bottom', anchor = 'se')        
-
-        frame_a.pack(padx = 2, pady = 2)
-        frame_b.pack(padx = 2, pady = 2)
-
-    def browse_file(self):
-        self.image_path = filedialog.askopenfilename()
-        try:
-            preview_pic = ImageTk.PhotoImage(self.read_resize(150))
-            self.label_png["image"] = preview_pic
-            self.label_png.image = preview_pic                  #Python needs reference or else it will not show up
-        except:
-            pass
-
-    def read_resize(self, pixel_width):
-        if(os.path.isfile(self.image_path)):
-            icon = Image.open(self.image_path)
-            basewidth = pixel_width
-            wpercent = (basewidth/float(icon.size[0]))
-            hsize = int((float(icon.size[1])*float(wpercent)))
-            icon = icon.resize((pixel_width, hsize), Image.NEAREST)
-            return icon
-
-    def make_gif(self, movement, main):
-        img = self.read_resize(150)
-        frames = 10
-        angles = []
-        for degree in range(0, int(360-360/frames), int(360/frames)):
-            angles.append(degree)
-
-        xmax = 4
-        ymax = 4
-        
-        #Create frames for gif depending on desired effect.
-        try:
-            if movement == "spin":
-                for theta in angles:
-                    self.img_list.append(img.rotate(angle=theta))
-            elif movement == "shake":
-                for i in range(frames):
-                    translation = (rand.randint(-xmax, xmax), rand.randint(-ymax, ymax))
-                    self.img_list.append(img.rotate(angle=0, translate= translation))
-        except:
-            pass  
-        
-        self.export(main)
-
-    def export(self,main):
-        try:
-            save_filename = filedialog.asksaveasfilename(
-                    defaultextension=".gif")
-            self.img_list[0].save(save_filename, format='GIF', save_all=True,
-                            append_images=self.img_list[1:], duration=100, transparency = 0, loop=0, disposal=2)
-            main.destroy()
-        except:
-            pass
+    def GButton_289_command(self):
+        print("command")
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.title('Add effects to PNG\'s!')
-    root.geometry("300x325")  
-    App(root,'c.ho','v1.0')
+    app = App(root)
     root.mainloop()
