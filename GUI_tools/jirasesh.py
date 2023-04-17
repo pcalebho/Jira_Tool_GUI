@@ -5,17 +5,21 @@ import pprint
 from copy import deepcopy
 from jira import JIRA
 from validator import Validator
+import default_auth_constants as constants
 
 class JiraInst():
     #Constructor
-    def __init__(self, auth_file = None):
+    def __init__(self, auth_filename_yaml = None):
         #import configure varibles
         with open('config_files/config.yaml', 'r') as file:
             config = yaml.safe_load(file)
             self._states = config["states"]
 
         #import authentication variables
-        with open('config_files/authentication.yml', 'r') as file:
+        if auth_filename_yaml is None:
+            auth_filename_yaml = 'config_files/default_authentication.yml'
+        
+        with open(auth_filename_yaml, 'r') as file:
             auth = yaml.safe_load(file)
 
         #Connect to jira and initiate session
