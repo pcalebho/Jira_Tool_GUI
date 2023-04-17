@@ -3,6 +3,7 @@ jira_tools/
 secrets/
 templates/
 changestate.py
+Figma_Api_Token.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
