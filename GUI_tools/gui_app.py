@@ -6,7 +6,8 @@ from pathlib import Path
 
 # from tkinter import *
 # Explicit imports to satisfy Flake8
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
+# from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Listbox
+from tkinter import *
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -15,7 +16,6 @@ ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ttrol\CodingProjects\Jira_Tool_GUI\b
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
-
 
 window = Tk()
 window.geometry("450x500")
@@ -59,12 +59,50 @@ canvas.create_rectangle(
     fill="#531BF3",
     outline="")
 
-#Viewbox for editing labels
+#Viewbox for queue
+# canvas.create_rectangle(
+#     206.0,
+#     110.0,
+#     413.0,
+#     377.0,
+#     fill="#FFFFFF",
+#     outline="")
+
+view_frame = Frame(master = window, height = 377-110, width = 413-206)
+view_frame.place(x = 206, y = 110)
+
+scrollbar = Scrollbar(view_frame)
+scrollbar.pack( side = RIGHT, fill = Y )
+
+viewbox = Listbox(master = view_frame, bd = 0, bg = 'white', height = 16, width = 31, yscrollcommand = scrollbar.set)
+
+viewbox.pack( side = LEFT, fill = BOTH )
+
+scrollbar.config( command = viewbox.yview )
+#Inital State View Box
+canvas.create_rectangle(
+    55.0,
+    274.0,
+    126.0,
+    305.0,
+    fill="#FFFFFF",
+    outline="")
+
+#Final State View Box
+canvas.create_rectangle(
+    55.0,
+    330.0,
+    126.0,
+    361.0,
+    fill="#FFFFFF",
+    outline="")
+
+# Results View Box
 canvas.create_rectangle(
     206.0,
-    110.0,
+    403.0,
     413.0,
-    377.0,
+    467.0,
     fill="#FFFFFF",
     outline="")
 
@@ -131,24 +169,6 @@ down_final_state_button.place(
     width=20.0,
     height=12.0
 )
-
-#Inital State View Box
-canvas.create_rectangle(
-    55.0,
-    274.0,
-    126.0,
-    305.0,
-    fill="#FFFFFF",
-    outline="")
-
-#Final State View Box
-canvas.create_rectangle(
-    55.0,
-    330.0,
-    126.0,
-    361.0,
-    fill="#FFFFFF",
-    outline="")
 
 canvas.create_text(
     77,
@@ -288,16 +308,6 @@ setup_button.place(
     width=86.0,
     height=29.27777099609375
 )
-
-# Results View Box
-canvas.create_rectangle(
-    206.0,
-    403.0,
-    413.0,
-    467.0,
-    fill="#FFFFFF",
-    outline="black")
-
 
 window.resizable(False, False)
 window.mainloop()
