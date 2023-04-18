@@ -7,6 +7,7 @@ from pathlib import Path
 # Explicit imports to satisfy Flake8
 # from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Listbox
 from tkinter import *
+from tkinter import messagebox
 from jirasesh import JiraInst
 
 OUTPUT_PATH = Path(__file__).parent
@@ -22,6 +23,7 @@ class mainGUI:
         self.states = self.jira.get_states()
         self.init_state = 0
         self.final_state = 1
+        self.user = 'Caleb Ho'
         #endregion
 
         #region  Setting up Backgrouond Aesthetics
@@ -203,7 +205,7 @@ class mainGUI:
             image=self.up_init_image0,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_10 clicked"),
+            command=self.change_state,
             relief="flat"
         )
         self.change_state_button.place(
@@ -219,7 +221,7 @@ class mainGUI:
             image=self.button_image_8,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_8 clicked"),
+            command= self.queue_state,
             relief="flat"
         )
         self.queue_state_button.place(
@@ -340,6 +342,7 @@ class mainGUI:
         
         #endregion
     
+    #region Methods
     def inc_dec_state(self, direction, chosen_state):
         #Necessary for finding number available states
         max = len(self.states)-1
@@ -380,6 +383,34 @@ class mainGUI:
         #     self.final_state_label["font"] = .1
         # else:
         #     self.final_state_label["font"] = .2
+    
+    def queue_state(self):
+        self.viewbox.delete(0,END)
+        queued_issues = self.jira.get_issues(assignee = self.user, search_state = self.states[self.init_state])
+        for i in range(len(queued_issues)):
+            key = queued_issues[i].key
+            summary = queued_issues[i].get_field('summary')
+            self.viewbox.insert(i+1, summary + " | " + key)
+    
+    def change_state(self):
+        if len(self.viewbox.get(0,END)) != 0:
+            confirmation = messagebox.askyesno(title = 'Batch Transition Confirmation', 
+                    message = "Would you like to proceed?")
+            if confirmation:
+                success = self.jira.change_state(self.user, self.states[self.final_state])
+        
+        self.viewbox.delete(0,END)
+
+    def browse_file(self):
+        pass
+
+    def queue_stories(self):
+        pass
+
+    def add_stories(self):
+        pass
+
+    #endregion
 
 if __name__ == "__main__":
     window = Tk()
