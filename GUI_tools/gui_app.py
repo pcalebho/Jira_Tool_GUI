@@ -404,7 +404,7 @@ class mainGUI:
                 self.result_msg = "Error: Transition Failure"
             else:
                 self.result_msg = "Success!"
-                
+
         self.viewbox.delete(0,END)
 
     def browse_file(self):
@@ -429,5 +429,6 @@ class mainGUI:
 
 if __name__ == "__main__":
     window = Tk()
+    window.title("Batch Jira Automation")
     a = mainGUI(window)
     window.mainloop()
