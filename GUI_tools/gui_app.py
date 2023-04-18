@@ -8,6 +8,7 @@ from pathlib import Path
 # from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Listbox
 from tkinter import *
 from tkinter import messagebox
+from tkinter.filedialog import askopenfilename
 from jirasesh import JiraInst
 
 OUTPUT_PATH = Path(__file__).parent
@@ -242,7 +243,7 @@ class mainGUI:
             image=self.button_image_5,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_5 clicked"),
+            command= self.browse_file,
             relief="flat"
         )
         self.browse_button.place(
@@ -269,14 +270,15 @@ class mainGUI:
             height=29.27777099609375
         )
 
-        self.canvas.create_text(
-            79.0,
-            77.0,
-            anchor="nw",
+        self.file_label = Label(
+            anchor="n",
+            width = 16,
             text="file.yaml",
-            fill="#FFFFFF",
-            font=("Inter Bold", 12 * -1)
+            font=("Inter Bold", 12 * -1),
+            bg = "#531BF3",
+            fg = 'white'
         )
+        self.file_label.place(x=46, y = 77.0,)
 
         self.button_image_9 = PhotoImage(
             file=relative_to_assets("button_9.png"))
@@ -409,7 +411,11 @@ class mainGUI:
         self.viewbox.delete(0,END)
 
     def browse_file(self):
-        pass
+        filetypes = (('yaml files', '*.yaml'),('yml files', '*.yml'),('All files', '*.*'))
+        f = askopenfilename(title  = 'Open issue file', filetypes = ())
+        path = Path(f)
+        self.added_stories_filepath = path
+        self.file_label["text"] = path.name
 
     def queue_stories(self):
         pass
