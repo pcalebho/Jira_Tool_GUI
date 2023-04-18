@@ -3,311 +3,314 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 
 from pathlib import Path
-
 # from tkinter import *
 # Explicit imports to satisfy Flake8
 # from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Listbox
 from tkinter import *
 
-
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ttrol\CodingProjects\Jira_Tool_GUI\build\assets\frame0")
 
-
 def relative_to_assets(path: str) -> Path:
-    return ASSETS_PATH / Path(path)
+        return ASSETS_PATH / Path(path)
 
-window = Tk()
-window.geometry("450x500")
-window.configure(bg = "#2EB3DD")
+class mainGUI:
+    def __init__(self, window):
+        window.resizable(False, False)
+        window.configure(bg = "#2EB3DD")
+        window.geometry("450x500")
+        self.canvas = Canvas(
+            window,
+            bg = "#2EB3DD",
+            height = 500,
+            width = 450,
+            bd = 0,
+            highlightthickness = 0,
+            relief = "ridge"
+        )
+        self.canvas.place(x = 0, y = 0)
 
-canvas = Canvas(
-    window,
-    bg = "#2EB3DD",
-    height = 500,
-    width = 450,
-    bd = 0,
-    highlightthickness = 0,
-    relief = "ridge"
-)
-canvas.place(x = 0, y = 0)
+        #View and Setup Background rectangle
+        self.canvas.create_rectangle(
+            206.0,
+            32.0,
+            413.0,
+            92.0,
+            fill="#000000",
+            outline="")
 
-#View and Setup Background rectangle
-canvas.create_rectangle(
-    206.0,
-    32.0,
-    413.0,
-    92.0,
-    fill="#000000",
-    outline="")
+        #State change background rectangle
+        self.canvas.create_rectangle(
+            39.0,
+            250.0,
+            170.0,
+            467.0,
+            fill="#531BF3",
+            outline="")
 
-#State change background rectangle
-canvas.create_rectangle(
-    39.0,
-    250.0,
-    170.0,
-    467.0,
-    fill="#531BF3",
-    outline="")
+        #Adding new stories background rectangle
+        self.canvas.create_rectangle(
+            39.0,
+            32.0,
+            170.0,
+            204.0,
+            fill="#531BF3",
+            outline="")
 
-#Adding new stories background rectangle
-canvas.create_rectangle(
-    39.0,
-    32.0,
-    170.0,
-    204.0,
-    fill="#531BF3",
-    outline="")
+        #Viewbox for queue
+        # canvas.create_rectangle(
+        #     206.0,
+        #     110.0,
+        #     413.0,
+        #     377.0,
+        #     fill="#FFFFFF",
+        #     outline="")
 
-#Viewbox for queue
-# canvas.create_rectangle(
-#     206.0,
-#     110.0,
-#     413.0,
-#     377.0,
-#     fill="#FFFFFF",
-#     outline="")
+        view_frame = Frame(master = window, height = 377-110, width = 413-206)
+        view_frame.place(x = 206, y = 110)
 
-view_frame = Frame(master = window, height = 377-110, width = 413-206)
-view_frame.place(x = 206, y = 110)
+        self.scrollbar = Scrollbar(view_frame)
+        self.scrollbar.pack( side = RIGHT, fill = Y )
 
-scrollbar = Scrollbar(view_frame)
-scrollbar.pack( side = RIGHT, fill = Y )
+        self.viewbox = Listbox(master = view_frame, bd = 0, bg = 'white', height = 16, width = 31, yscrollcommand = self.scrollbar.set)
 
-viewbox = Listbox(master = view_frame, bd = 0, bg = 'white', height = 16, width = 31, yscrollcommand = scrollbar.set)
+        self.viewbox.pack( side = LEFT, fill = BOTH )
 
-viewbox.pack( side = LEFT, fill = BOTH )
+        self.scrollbar.config( command = self.viewbox.yview )
+        #Inital State View Box
+        self.canvas.create_rectangle(
+            55.0,
+            274.0,
+            126.0,
+            305.0,
+            fill="#FFFFFF",
+            outline="")
 
-scrollbar.config( command = viewbox.yview )
-#Inital State View Box
-canvas.create_rectangle(
-    55.0,
-    274.0,
-    126.0,
-    305.0,
-    fill="#FFFFFF",
-    outline="")
+        #Final State View Box
+        self.canvas.create_rectangle(
+            55.0,
+            330.0,
+            126.0,
+            361.0,
+            fill="#FFFFFF",
+            outline="")
 
-#Final State View Box
-canvas.create_rectangle(
-    55.0,
-    330.0,
-    126.0,
-    361.0,
-    fill="#FFFFFF",
-    outline="")
+        # Results View Box
+        self.canvas.create_rectangle(
+            206.0,
+            403.0,
+            413.0,
+            467.0,
+            fill="#FFFFFF",
+            outline="")
 
-# Results View Box
-canvas.create_rectangle(
-    206.0,
-    403.0,
-    413.0,
-    467.0,
-    fill="#FFFFFF",
-    outline="")
+        self.button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
+    
+        self.up_init_state_button = Button(
+            image=self.button_image_1,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_1 clicked"),
+            relief="flat"
+        )
+        self.up_init_state_button.place(
+            x=133.0,
+            y=274.0,
+            width=20.0,
+            height=12.0
+        )
 
-button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
+        self.button_image_2 = PhotoImage(
+            file=relative_to_assets("button_2.png"))
+        self.down_init_state_button = Button(
+            image=self.button_image_2,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_2 clicked"),
+            relief="flat"
+        )
+        self.down_init_state_button.place(
+            x=133.0,
+            y=293.0,
+            width=20.0,
+            height=12.0
+        )
 
-up_init_state_button = Button(
-    image=button_image_1,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_1 clicked"),
-    relief="flat"
-)
-up_init_state_button.place(
-    x=133.0,
-    y=274.0,
-    width=20.0,
-    height=12.0
-)
+        self.button_image_3 = PhotoImage(file=relative_to_assets("button_3.png"))
 
-button_image_2 = PhotoImage(
-    file=relative_to_assets("button_2.png"))
-down_init_state_button = Button(
-    image=button_image_2,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_2 clicked"),
-    relief="flat"
-)
-down_init_state_button.place(
-    x=133.0,
-    y=293.0,
-    width=20.0,
-    height=12.0
-)
+        self.up_final_state_button = Button(
+            image=self.button_image_3,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_3 clicked"),
+            relief="flat"
+        )
+        self.up_final_state_button.place(
+            x=133.0,
+            y=330.0,
+            width=20.0,
+            height=12.0
+        )
 
-button_image_3 = PhotoImage(file=relative_to_assets("button_3.png"))
+        self.button_image_4 = PhotoImage(file=relative_to_assets("button_4.png"))
 
-up_final_state_button = Button(
-    image=button_image_3,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_3 clicked"),
-    relief="flat"
-)
-up_final_state_button.place(
-    x=133.0,
-    y=330.0,
-    width=20.0,
-    height=12.0
-)
+        self.down_final_state_button = Button(
+            image=self.button_image_4,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_4 clicked"),
+            relief="flat"
+        )
+        self.down_final_state_button.place(
+            x=133.0,
+            y=349.0,
+            width=20.0,
+            height=12.0
+        )
 
-button_image_4 = PhotoImage(file=relative_to_assets("button_4.png"))
+        self.canvas.create_text(
+            77,
+            259.0,
+            anchor="nw",
+            text="Initial",
+            fill="#FFFFFF",
+            font=("Inter Bold", 12 * -1)
+        )
 
-down_final_state_button = Button(
-    image=button_image_4,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_4 clicked"),
-    relief="flat"
-)
-down_final_state_button.place(
-    x=133.0,
-    y=349.0,
-    width=20.0,
-    height=12.0
-)
+        self.canvas.create_text(
+            78,
+            315.0,
+            anchor="nw",
+            text="Final",
+            fill="#FFFFFF",
+            font=("Inter Bold", 12 * -1)
+        )
 
-canvas.create_text(
-    77,
-    259.0,
-    anchor="nw",
-    text="Initial",
-    fill="#FFFFFF",
-    font=("Inter Bold", 12 * -1)
-)
+        self.button_image_5 = PhotoImage(
+            file=relative_to_assets("button_5.png"))
+        self.browse_button = Button(
+            window,
+            image=self.button_image_5,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_5 clicked"),
+            relief="flat"
+        )
+        self.browse_button.place(
+            x=64.0,
+            y=48.0,
+            width=81.0,
+            height=29.27777099609375
+        )
 
-canvas.create_text(
-    78,
-    315.0,
-    anchor="nw",
-    text="Final",
-    fill="#FFFFFF",
-    font=("Inter Bold", 12 * -1)
-)
+        self.button_image_6 = PhotoImage(
+            file=relative_to_assets("button_6.png"))
+        self.view_stories_button = Button(
+            image=self.button_image_6,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_6 clicked"),
+            relief="flat"
+        )
+        self.view_stories_button.place(
+            x=218.0,
+            y=48.0,
+            width=86.0,
+            height=29.27777099609375
+        )
 
-button_image_5 = PhotoImage(
-    file=relative_to_assets("button_5.png"))
-browse_button = Button(
-    image=button_image_5,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_5 clicked"),
-    relief="flat"
-)
-browse_button.place(
-    x=64.0,
-    y=48.0,
-    width=81.0,
-    height=29.27777099609375
-)
+        self.button_image_7 = PhotoImage(
+            file=relative_to_assets("button_7.png"))
+        self.add_stories_button = Button(
+            image=self.button_image_7,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_7 clicked"),
+            relief="flat"
+        )
+        self.add_stories_button.place(
+            x=64.0,
+            y=157.0,
+            width=81.0,
+            height=29.27777099609375
+        )
 
-button_image_6 = PhotoImage(
-    file=relative_to_assets("button_6.png"))
-view_stories_button = Button(
-    image=button_image_6,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_6 clicked"),
-    relief="flat"
-)
-view_stories_button.place(
-    x=218.0,
-    y=48.0,
-    width=86.0,
-    height=29.27777099609375
-)
+        self.canvas.create_text(
+            79.0,
+            77.0,
+            anchor="nw",
+            text="file.yaml",
+            fill="#FFFFFF",
+            font=("Inter Bold", 12 * -1)
+        )
 
-button_image_7 = PhotoImage(
-    file=relative_to_assets("button_7.png"))
-add_stories_button = Button(
-    image=button_image_7,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_7 clicked"),
-    relief="flat"
-)
-add_stories_button.place(
-    x=64.0,
-    y=157.0,
-    width=81.0,
-    height=29.27777099609375
-)
+        self.button_image_8 = PhotoImage(
+            file=relative_to_assets("button_8.png"))
+        self.queue_state_button = Button(
+            image=self.button_image_8,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_8 clicked"),
+            relief="flat"
+        )
+        self.queue_state_button.place(
+            x=55.0,
+            y=375.0,
+            width=98.0,
+            height=29.27777099609375
+        )
 
-canvas.create_text(
-    79.0,
-    77.0,
-    anchor="nw",
-    text="file.yaml",
-    fill="#FFFFFF",
-    font=("Inter Bold", 12 * -1)
-)
+        self.button_image_9 = PhotoImage(
+            file=relative_to_assets("button_9.png"))
+        self.queue_stories_button = Button(
+            image=self.button_image_9,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_9 clicked"),
+            relief="flat"
+        )
+        self.queue_stories_button.place(
+            x=55.0,
+            y=110.0,
+            width=98.0,
+            height=29.27777099609375
+        )
 
-button_image_8 = PhotoImage(
-    file=relative_to_assets("button_8.png"))
-queue_state_button = Button(
-    image=button_image_8,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_8 clicked"),
-    relief="flat"
-)
-queue_state_button.place(
-    x=55.0,
-    y=375.0,
-    width=98.0,
-    height=29.27777099609375
-)
+        self.button_image_10 = PhotoImage(
+            file=relative_to_assets("button_10.png"))
+        self.change_state_button = Button(
+            image=self.button_image_10,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_10 clicked"),
+            relief="flat"
+        )
+        self.change_state_button.place(
+            x=55.0,
+            y=418.0,
+            width=98.0,
+            height=29.27777862548828
+        )
 
-button_image_9 = PhotoImage(
-    file=relative_to_assets("button_9.png"))
-queue_stories_button = Button(
-    image=button_image_9,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_9 clicked"),
-    relief="flat"
-)
-queue_stories_button.place(
-    x=55.0,
-    y=110.0,
-    width=98.0,
-    height=29.27777099609375
-)
+        self.button_image_11 = PhotoImage(
+            file=relative_to_assets("button_11.png"))
+        self.setup_button = Button(
+            image=self.button_image_11,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_11 clicked"),
+            relief="flat"
+        )
+        self.setup_button.place(
+            x=314.0,
+            y=48.0,
+            width=86.0,
+            height=29.27777099609375
+        )
+    
 
-button_image_10 = PhotoImage(
-    file=relative_to_assets("button_10.png"))
-change_state_button = Button(
-    image=button_image_10,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_10 clicked"),
-    relief="flat"
-)
-change_state_button.place(
-    x=55.0,
-    y=418.0,
-    width=98.0,
-    height=29.27777862548828
-)
-
-button_image_11 = PhotoImage(
-    file=relative_to_assets("button_11.png"))
-setup_button = Button(
-    image=button_image_11,
-    borderwidth=0,
-    highlightthickness=0,
-    command=lambda: print("button_11 clicked"),
-    relief="flat"
-)
-setup_button.place(
-    x=314.0,
-    y=48.0,
-    width=86.0,
-    height=29.27777099609375
-)
-
-window.resizable(False, False)
-window.mainloop()
+    
+if __name__ == "__main__":
+    window = Tk()
+    a = mainGUI(window)
+    window.mainloop()
