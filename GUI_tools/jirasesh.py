@@ -41,6 +41,10 @@ class JiraInst():
 
         return issue_list
     
+    #Get states of jira instance
+    def get_states(self):
+        return self._states
+    
     #Changes states of issues for a given user. 
     def change_state(self, assignee, final_state, initial_state = None, issues_2_change = None):            
         if initial_state is None:
