@@ -16,9 +16,11 @@ def relative_to_assets(path: str) -> Path:
 
 class mainGUI:
     def __init__(self, window):
+        #region  Setting up Backgrouond Aesthetics
         window.resizable(False, False)
         window.configure(bg = "#2EB3DD")
         window.geometry("450x500")
+
         self.canvas = Canvas(
             window,
             bg = "#2EB3DD",
@@ -56,7 +58,10 @@ class mainGUI:
             204.0,
             fill="#531BF3",
             outline="")
+        
+        #endregion
 
+        #region Viewbox and selection
         #Viewbox for queue
         # canvas.create_rectangle(
         #     206.0,
@@ -77,6 +82,10 @@ class mainGUI:
         self.viewbox.pack( side = LEFT, fill = BOTH )
 
         self.scrollbar.config( command = self.viewbox.yview )
+        #endregion
+
+        #region State changing stories
+
         #Inital State View Box
         self.canvas.create_rectangle(
             55.0,
@@ -95,14 +104,6 @@ class mainGUI:
             fill="#FFFFFF",
             outline="")
 
-        # Results View Box
-        self.canvas.create_rectangle(
-            206.0,
-            403.0,
-            413.0,
-            467.0,
-            fill="#FFFFFF",
-            outline="")
 
         self.button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
     
@@ -186,6 +187,41 @@ class mainGUI:
             font=("Inter Bold", 12 * -1)
         )
 
+        self.button_image_10 = PhotoImage(
+            file=relative_to_assets("button_10.png"))
+        self.change_state_button = Button(
+            image=self.button_image_10,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_10 clicked"),
+            relief="flat"
+        )
+        self.change_state_button.place(
+            x=55.0,
+            y=418.0,
+            width=98.0,
+            height=29.27777862548828
+        )
+
+        self.button_image_8 = PhotoImage(
+            file=relative_to_assets("button_8.png"))
+        self.queue_state_button = Button(
+            image=self.button_image_8,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_8 clicked"),
+            relief="flat"
+        )
+        self.queue_state_button.place(
+            x=55.0,
+            y=375.0,
+            width=98.0,
+            height=29.27777099609375
+        )
+
+        #endregion
+
+        #region Add stories
         self.button_image_5 = PhotoImage(
             file=relative_to_assets("button_5.png"))
         self.browse_button = Button(
@@ -203,21 +239,6 @@ class mainGUI:
             height=29.27777099609375
         )
 
-        self.button_image_6 = PhotoImage(
-            file=relative_to_assets("button_6.png"))
-        self.view_stories_button = Button(
-            image=self.button_image_6,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: print("button_6 clicked"),
-            relief="flat"
-        )
-        self.view_stories_button.place(
-            x=218.0,
-            y=48.0,
-            width=86.0,
-            height=29.27777099609375
-        )
 
         self.button_image_7 = PhotoImage(
             file=relative_to_assets("button_7.png"))
@@ -244,22 +265,6 @@ class mainGUI:
             font=("Inter Bold", 12 * -1)
         )
 
-        self.button_image_8 = PhotoImage(
-            file=relative_to_assets("button_8.png"))
-        self.queue_state_button = Button(
-            image=self.button_image_8,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: print("button_8 clicked"),
-            relief="flat"
-        )
-        self.queue_state_button.place(
-            x=55.0,
-            y=375.0,
-            width=98.0,
-            height=29.27777099609375
-        )
-
         self.button_image_9 = PhotoImage(
             file=relative_to_assets("button_9.png"))
         self.queue_stories_button = Button(
@@ -275,23 +280,9 @@ class mainGUI:
             width=98.0,
             height=29.27777099609375
         )
-
-        self.button_image_10 = PhotoImage(
-            file=relative_to_assets("button_10.png"))
-        self.change_state_button = Button(
-            image=self.button_image_10,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: print("button_10 clicked"),
-            relief="flat"
-        )
-        self.change_state_button.place(
-            x=55.0,
-            y=418.0,
-            width=98.0,
-            height=29.27777862548828
-        )
-
+        #endregion
+        
+        #region Setup and View
         self.button_image_11 = PhotoImage(
             file=relative_to_assets("button_11.png"))
         self.setup_button = Button(
@@ -307,8 +298,37 @@ class mainGUI:
             width=86.0,
             height=29.27777099609375
         )
-    
 
+        self.button_image_6 = PhotoImage(
+            file=relative_to_assets("button_6.png"))
+        self.view_stories_button = Button(
+            image=self.button_image_6,
+            borderwidth=0,
+            highlightthickness=0,
+            command=lambda: print("button_6 clicked"),
+            relief="flat"
+        )
+        self.view_stories_button.place(
+            x=218.0,
+            y=48.0,
+            width=86.0,
+            height=29.27777099609375
+        )
+
+        #endregion
+
+        #region Messagebox
+
+        # Results View Box
+        self.canvas.create_rectangle(
+            206.0,
+            403.0,
+            413.0,
+            467.0,
+            fill="#FFFFFF",
+            outline="")
+        
+        #endregion
     
 if __name__ == "__main__":
     window = Tk()
