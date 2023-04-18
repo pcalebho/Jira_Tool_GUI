@@ -56,6 +56,8 @@ class JiraInst():
             issue_list = issues_2_change
 
         try:
+            if len(issue_list) == 0:
+                return False
             for issue in issue_list:    
                 self.jira_session.transition_issue(issue.key, final_state)
             return True
