@@ -7,6 +7,7 @@ from pathlib import Path
 # Explicit imports to satisfy Flake8
 # from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Listbox
 from tkinter import *
+from jirasesh import JiraInst
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ttrol\CodingProjects\Jira_Tool_GUI\build\assets\frame0")
@@ -16,6 +17,13 @@ def relative_to_assets(path: str) -> Path:
 
 class mainGUI:
     def __init__(self, window):
+        #region Instance members
+        self.jira = JiraInst()
+        self.states = self.jira.get_states()
+        self.init_state = 0
+        self.final_state = 1
+        #endregion
+
         #region  Setting up Backgrouond Aesthetics
         window.resizable(False, False)
         window.configure(bg = "#2EB3DD")
@@ -86,32 +94,34 @@ class mainGUI:
 
         #region State changing stories
 
-        #Inital State View Box
-        self.canvas.create_rectangle(
-            55.0,
-            274.0,
-            126.0,
-            305.0,
-            fill="#FFFFFF",
-            outline="")
+        #Inital View
+        self.init_state_label = Label(
+            window,
+            bg = '#FFFFFF',
+            bd = 0,
+            height = 2,
+            width = 10,
+            text = self.states[self.init_state])
+        self.init_state_label.place(x= 55, y=274)
+        
+        #Final View
+        self.final_state_label = Label(
+            window,
+            bg = '#FFFFFF',
+            bd = 0,
+            height = 2,
+            width = 10,
+            text = self.states[self.final_state])
+        self.final_state_label.place(x= 55, y=330)
 
-        #Final State View Box
-        self.canvas.create_rectangle(
-            55.0,
-            330.0,
-            126.0,
-            361.0,
-            fill="#FFFFFF",
-            outline="")
 
-
-        self.button_image_1 = PhotoImage(file=relative_to_assets("button_1.png"))
+        self.up_init_image = PhotoImage(file=relative_to_assets("button_1.png"))
     
         self.up_init_state_button = Button(
-            image=self.button_image_1,
+            image=self.up_init_image,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_1 clicked"),
+            command=lambda: self.inc_dec_state(1, 'initial'),
             relief="flat"
         )
         self.up_init_state_button.place(
@@ -127,12 +137,12 @@ class mainGUI:
             image=self.button_image_2,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_2 clicked"),
+            command= lambda: self.inc_dec_state(-1, 'initial'),
             relief="flat"
         )
         self.down_init_state_button.place(
             x=133.0,
-            y=293.0,
+            y=295.0,
             width=20.0,
             height=12.0
         )
@@ -143,7 +153,7 @@ class mainGUI:
             image=self.button_image_3,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_3 clicked"),
+            command=lambda: self.inc_dec_state(1, 'final'),
             relief="flat"
         )
         self.up_final_state_button.place(
@@ -159,12 +169,12 @@ class mainGUI:
             image=self.button_image_4,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_4 clicked"),
+            command=lambda: self.inc_dec_state(1, 'final'),
             relief="flat"
         )
         self.down_final_state_button.place(
             x=133.0,
-            y=349.0,
+            y=351.0,
             width=20.0,
             height=12.0
         )
@@ -187,10 +197,10 @@ class mainGUI:
             font=("Inter Bold", 12 * -1)
         )
 
-        self.button_image_10 = PhotoImage(
+        self.up_init_image0 = PhotoImage(
             file=relative_to_assets("button_10.png"))
         self.change_state_button = Button(
-            image=self.button_image_10,
+            image=self.up_init_image0,
             borderwidth=0,
             highlightthickness=0,
             command=lambda: print("button_10 clicked"),
@@ -283,10 +293,10 @@ class mainGUI:
         #endregion
         
         #region Setup and View
-        self.button_image_11 = PhotoImage(
+        self.up_init_image1 = PhotoImage(
             file=relative_to_assets("button_11.png"))
         self.setup_button = Button(
-            image=self.button_image_11,
+            image=self.up_init_image1,
             borderwidth=0,
             highlightthickness=0,
             command=lambda: print("button_11 clicked"),
@@ -330,6 +340,47 @@ class mainGUI:
         
         #endregion
     
+    def inc_dec_state(self, direction, chosen_state):
+        #Necessary for finding number available states
+        max = len(self.states)-1
+
+        #Used to make sure the state doesn't go out of bounds but insteads loops around
+        #Nested loops are not very readable sorry
+        if chosen_state == "initial":
+            if direction < 0:
+                if self.init_state == 0:
+                    self.init_state = max
+                else:
+                    self.init_state -= 1
+            else:
+                if self.init_state == max:
+                    self.init_state = 0
+                else:
+                    self.init_state += 1
+            self.init_state_label["text"] = self.states[self.init_state]
+        elif chosen_state == "final":
+            if direction < 0:
+                if self.final_state == 0:
+                    self.final_state = max
+                else:
+                    self.final_state -= 1
+            else:
+                if self.final_state == max:
+                    self.final_state = 0
+                else:
+                    self.final_state += 1
+            self.final_state_label["text"] = self.states[self.final_state]
+        
+        # if len(self.states[self.init_state]) > 15:
+        #     self.init_state_label["font"] = .1
+        # else:
+        #     self.init_state_label["font"] = .2
+
+        # if len(self.states[self.final_state]) > 15:
+        #     self.final_state_label["font"] = .1
+        # else:
+        #     self.final_state_label["font"] = .2
+
 if __name__ == "__main__":
     window = Tk()
     a = mainGUI(window)
