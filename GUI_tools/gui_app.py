@@ -17,6 +17,7 @@ def relative_to_assets(path: str) -> Path:
         return ASSETS_PATH / Path(path)
 
 class mainGUI:
+    #region GUI layout
     def __init__(self, window):
         #region Instance members
         self.jira = JiraInst()
@@ -329,7 +330,7 @@ class mainGUI:
 
         #endregion
 
-        #region Messagebox
+        #region Result Message box
 
         # Results View Box
         self.canvas.create_rectangle(
@@ -341,7 +342,7 @@ class mainGUI:
             outline="")
         
         #endregion
-    
+    #endregion
     #region Methods
     def inc_dec_state(self, direction, chosen_state):
         #Necessary for finding number available states
