@@ -386,7 +386,7 @@ class mainGUI:
     
     def queue_state(self):
         self.viewbox.delete(0,END)
-        queued_issues = self.jira.get_issues(assignee = self.user, search_state = self.states[self.init_state])
+        queued_issues = self.jira.get_issues(assignee = self.user, search_state = self.get_current_initial())
         for i in range(len(queued_issues)):
             key = queued_issues[i].key
             summary = queued_issues[i].get_field('summary')
@@ -394,8 +394,9 @@ class mainGUI:
     
     def change_state(self):
         if len(self.viewbox.get(0,END)) != 0:
+            message = self.get_current_initial() + ' -> ' + self.get_current_final() + "?"
             confirmation = messagebox.askyesno(title = 'Batch Transition Confirmation', 
-                    message = "Would you like to proceed?")
+                    message = message)
             if confirmation:
                 success = self.jira.change_state(self.user, self.states[self.final_state])
         
@@ -409,6 +410,15 @@ class mainGUI:
 
     def add_stories(self):
         pass
+
+    #region helper methods
+    def get_current_final(self):
+        return self.states[self.final_state]
+    
+    def get_current_initial(self):
+        return self.states[self.init_state]
+
+    #endregion
 
     #endregion
 
