@@ -399,7 +399,12 @@ class mainGUI:
                     message = message)
             if confirmation:
                 success = self.jira.change_state(self.user, self.states[self.final_state])
-        
+
+            if not success:
+                self.result_msg = "Error: Transition Failure"
+            else:
+                self.result_msg = "Success!"
+                
         self.viewbox.delete(0,END)
 
     def browse_file(self):
