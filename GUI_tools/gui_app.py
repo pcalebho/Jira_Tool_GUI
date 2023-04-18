@@ -18,7 +18,6 @@ def relative_to_assets(path: str) -> Path:
 
 
 window = Tk()
-
 window.geometry("450x500")
 window.configure(bg = "#2EB3DD")
 
@@ -31,8 +30,9 @@ canvas = Canvas(
     highlightthickness = 0,
     relief = "ridge"
 )
-
 canvas.place(x = 0, y = 0)
+
+#View and Setup Background rectangle
 canvas.create_rectangle(
     206.0,
     32.0,
@@ -41,6 +41,7 @@ canvas.create_rectangle(
     fill="#000000",
     outline="")
 
+#State change background rectangle
 canvas.create_rectangle(
     39.0,
     250.0,
@@ -49,6 +50,7 @@ canvas.create_rectangle(
     fill="#531BF3",
     outline="")
 
+#Adding new stories background rectangle
 canvas.create_rectangle(
     39.0,
     32.0,
@@ -57,6 +59,7 @@ canvas.create_rectangle(
     fill="#531BF3",
     outline="")
 
+#Viewbox for editing labels
 canvas.create_rectangle(
     206.0,
     110.0,
@@ -97,8 +100,8 @@ down_init_state_button.place(
     height=12.0
 )
 
-button_image_3 = PhotoImage(
-    file=relative_to_assets("button_3.png"))
+button_image_3 = PhotoImage(file=relative_to_assets("button_3.png"))
+
 up_final_state_button = Button(
     image=button_image_3,
     borderwidth=0,
@@ -113,8 +116,8 @@ up_final_state_button.place(
     height=12.0
 )
 
-button_image_4 = PhotoImage(
-    file=relative_to_assets("button_4.png"))
+button_image_4 = PhotoImage(file=relative_to_assets("button_4.png"))
+
 down_final_state_button = Button(
     image=button_image_4,
     borderwidth=0,
@@ -129,6 +132,7 @@ down_final_state_button.place(
     height=12.0
 )
 
+#Inital State View Box
 canvas.create_rectangle(
     55.0,
     274.0,
@@ -137,6 +141,7 @@ canvas.create_rectangle(
     fill="#FFFFFF",
     outline="")
 
+#Final State View Box
 canvas.create_rectangle(
     55.0,
     330.0,
@@ -146,7 +151,7 @@ canvas.create_rectangle(
     outline="")
 
 canvas.create_text(
-    57.0,
+    77,
     259.0,
     anchor="nw",
     text="Initial",
@@ -155,7 +160,7 @@ canvas.create_text(
 )
 
 canvas.create_text(
-    55.0,
+    78,
     315.0,
     anchor="nw",
     text="Final",
@@ -284,12 +289,15 @@ setup_button.place(
     height=29.27777099609375
 )
 
+# Results View Box
 canvas.create_rectangle(
     206.0,
     403.0,
     413.0,
     467.0,
     fill="#FFFFFF",
-    outline="")
+    outline="black")
+
+
 window.resizable(False, False)
 window.mainloop()
