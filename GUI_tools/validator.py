@@ -132,16 +132,12 @@ class Validator(object):
 
                 issues.append(issue)
             except KeyError as err:
-                click.secho("issue dict is missing key '{}'".format(err.args[0]),
-                            err=True, fg='orange')
                 if self.fatal_errors:
                     return []
             except ValidationError as err:
-                click.secho(err, err=True, fg='red')
                 if self.fatal_errors:
                     return []
             except JIRAError as err:
-                click.secho(err.url + "\n" + err.text, err=True, fg='red')
                 if self.fatal_errors:
                     return []
 

@@ -286,7 +286,7 @@ class mainGUI:
             image=self.button_image_9,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_9 clicked"),
+            command= self.queue_stories,
             relief="flat"
         )
         self.queue_stories_button.place(
@@ -388,13 +388,9 @@ class mainGUI:
         #     self.final_state_label["font"] = .2
     
     def queue_state(self):
-        self.viewbox.delete(0,END)
         queued_issues = self.jira.get_issues(assignee = self.user, search_state = self.get_current_initial())
-        for i in range(len(queued_issues)):
-            key = queued_issues[i].key
-            summary = queued_issues[i].get_field('summary')
-            self.viewbox.insert(i+1, summary + " | " + key)
-    
+        self.display_issues(queued_issues)
+        
     def change_state(self):
         if len(self.viewbox.get(0,END)) != 0:
             message = self.get_current_initial() + ' -> ' + self.get_current_final() + "?"
@@ -414,11 +410,12 @@ class mainGUI:
         filetypes = (('yaml files', '*.yaml'),('yml files', '*.yml'),('All files', '*.*'))
         f = askopenfilename(title  = 'Open issue file', filetypes = ())
         path = Path(f)
-        self.added_stories_filepath = path
+        self.added_stories_filepath = f
         self.file_label["text"] = path.name
 
     def queue_stories(self):
-        pass
+        queued_issues = self.jira.upload(issues_yml = self.added_stories_filepath, dry_run = True)
+        self.display_issues(queued_issues)
 
     def add_stories(self):
         pass
@@ -429,6 +426,14 @@ class mainGUI:
     
     def get_current_initial(self):
         return self.states[self.init_state]
+
+    def display_issues(self, queued_issues):
+        self.viewbox.delete(0,END)
+
+        for i in range(len(queued_issues)):
+            key = queued_issues[i].key
+            summary = queued_issues[i].get_field('summary')
+            self.viewbox.insert(i+1, summary + " | " + key)
 
     #endregion
 

@@ -74,12 +74,13 @@ class JiraInst():
         except:
             pass
 
-    def upload(self, closed_sprints, prompt, duplicates, fatal_errors, prepend_sprint, issues_yml):
+    def upload(self, issues_yml, dry_run = False):
         """Use TOKEN to connect to Jira site and upload issues from CONFIG."""
         # parse yaml into list of story, task, bugs
-        config = yaml.load(issues_yml, Loader=yaml.Loader)
+        with open(issues_yml, 'r') as file:
+            config = yaml.safe_load(file)
+        
         issues = []
-
 
         try:
             for issue_cfg in config['issues']:
@@ -92,13 +93,10 @@ class JiraInst():
 
 
         # validate issues
-        v = Validator(self.jira_session, fatal_errors=fatal_errors,
-                    duplicates=duplicates, closed_sprints=closed_sprints,
-                    prepend_sprint=prepend_sprint)
+        v = Validator(self.jira_session)
         vissues = v.validate(issues)
 
-
-        #check if issues are empty
+                #check if issues are empty
         if len(vissues) == 0:
             return
 
@@ -110,17 +108,22 @@ class JiraInst():
             epic_id = issue.pop('epic').id
             board = issue.pop('board')
 
-            res = jira.create_issue(issue)
+            res = self.jira_session.create_issue(issue)
             results.append(res)
-            jira.add_issues_to_sprint(sprint_id=sprint_id,
-                                    issue_keys=[res.key])
 
-            # the add_issues_to_epic API appears to be deprecated
-            try:
-                jira.add_issues_to_epic(epic_id=epic_id,
+            if not dry_run:
+                self.jira_session.add_issues_to_sprint(sprint_id=sprint_id,
                                         issue_keys=[res.key])
-            except NotImplementedError:
-                res.update(fields={'parent': {'id': epic_id}})   
+
+                # the add_issues_to_epic API appears to be deprecated
+                try:
+                    self.jira_sessiona.add_issues_to_epic(epic_id=epic_id,
+                                            issue_keys=[res.key])
+                except NotImplementedError:
+                    res.update(fields={'parent': {'id': epic_id}})   
+
+        if dry_run:
+            return results
 
         return 0
 
