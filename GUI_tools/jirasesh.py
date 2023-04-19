@@ -74,8 +74,7 @@ class JiraInst():
         except:
             pass
 
-    def upload(self, issues_yml, dry_run = False):
-        """Use TOKEN to connect to Jira site and upload issues from CONFIG."""
+    def convert_yaml(self, issues_yml, dry_run = False, validation = True):
         # parse yaml into list of story, task, bugs
         with open(issues_yml, 'r') as file:
             config = yaml.safe_load(file)
@@ -93,13 +92,15 @@ class JiraInst():
 
 
         # validate issues
-        v = Validator(self.jira_session)
-        vissues = v.validate(issues)
+        if validation:
+            v = Validator(self.jira_session)
+            vissues = v.validate(issues)
+        
+        issues = vissues
 
-                #check if issues are empty
+        #check if issues are empty
         if len(vissues) == 0:
             return
-
 
         #Add issues to sprint and epic
         results = []
@@ -126,6 +127,24 @@ class JiraInst():
             return results
 
         return 0
+
+    def upload(self, issues):
+        for issue in issues:
+            sprint_id = issue.pop('sprint').id
+            epic_id = issue.pop('epic').id
+            board = issue.pop('board')
+
+            res = self.jira_session.create_issue(issue)
+            
+            self.jira_session.add_issues_to_sprint(sprint_id=sprint_id,
+                                            issue_keys=[res.key])
+
+            # the add_issues_to_epic API appears to be deprecated
+            try:
+                self.jira_sessiona.add_issues_to_epic(epic_id=epic_id,
+                                        issue_keys=[res.key])
+            except NotImplementedError:
+                res.update(fields={'parent': {'id': epic_id}})
 
 if __name__ == "__main__":
     a = JiraInst()
