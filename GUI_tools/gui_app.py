@@ -9,6 +9,8 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
 from jirasesh import JiraInst
+from PIL import Image, ImageTk
+import tkinter.ttk as ttk
 
 path_parts = Path(__file__).parts
 parent_path = '\\'.join(path_parts[0:len(path_parts)-2])+'/GUI_assets/assets/frame0'
@@ -25,13 +27,13 @@ class mainGUI:
         self.states = self.jira.get_states()
         self.init_state = 0
         self.final_state = 1
-        self.user = 'Caleb Ho'
+        self.user = "FirstName LastName"
         #endregion
 
         #region  Setting up Background Aesthetics
         window.resizable(False, False)
         window.configure(bg = "#2EB3DD")
-        window.geometry("450x500")
+        window.geometry("600x600")
 
         self.canvas = Canvas(
             window,
@@ -43,15 +45,6 @@ class mainGUI:
             relief = "ridge"
         )
         self.canvas.place(x = 0, y = 0)
-
-        #View and Setup Background rectangle
-        self.canvas.create_rectangle(
-            206.0,
-            32.0,
-            413.0,
-            92.0,
-            fill="#000000",
-            outline="")
 
         #State change background rectangle
         self.canvas.create_rectangle(
@@ -74,22 +67,15 @@ class mainGUI:
         #endregion
 
         #region Viewbox and selection
-        #Viewbox for queue
-        # canvas.create_rectangle(
-        #     206.0,
-        #     110.0,
-        #     413.0,
-        #     377.0,
-        #     fill="#FFFFFF",
-        #     outline="")
-
-        view_frame = Frame(master = window, height = 377-110, width = 413-206)
+        #View and Setup Background rectangle
+               
+        view_frame = Frame(master = window, height = 377-110, width = 413-206+150)
         view_frame.place(x = 206, y = 110)
 
         self.scrollbar = Scrollbar(view_frame)
         self.scrollbar.pack( side = RIGHT, fill = Y )
 
-        self.viewbox = Listbox(master = view_frame, bd = 0, bg = 'white', height = 16, width = 31, yscrollcommand = self.scrollbar.set)
+        self.viewbox = Listbox(master = view_frame, bd = 0, bg = 'white', height = 16, width = 31+25, yscrollcommand = self.scrollbar.set)
         self.viewbox.pack( side = LEFT, fill = BOTH )
 
         self.scrollbar.config( command = self.viewbox.yview )
@@ -297,38 +283,23 @@ class mainGUI:
         #endregion
         
         #region Setup and View
-        self.up_init_image1 = PhotoImage(
-            file=relative_to_assets("button_11.png"))
-        self.setup_button = Button(
-            image=self.up_init_image1,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: print("button_11 clicked"),
-            relief="flat"
+        name_frame = Frame(height = 72-32, bg = "black",padx = 10, pady= 5)
+        name_frame.place(x= 206, y = 32)
+        
+        self.user_label = Label(master= name_frame, justify = LEFT, text = "name:", fg = "white", bg = "black", font = "Inter 11 bold")
+        self.user_label.pack(side = LEFT)
+        
+        #ttk.Style().configure('pad.TEntry', padding='0 0 10 0')
+        
+        self.username_entry = Entry(
+            master = name_frame,
+            width = 34,
+            font = "Inter 9",
         )
-        self.setup_button.place(
-            x=314.0,
-            y=48.0,
-            width=86.0,
-            height=29.27777099609375
-        )
+        self.username_entry.pack(side = RIGHT)
+        self.username_entry.insert(0, self.user)
 
-        self.button_image_6 = PhotoImage(
-            file=relative_to_assets("button_6.png"))
-        self.view_stories_button = Button(
-            image=self.button_image_6,
-            borderwidth=0,
-            highlightthickness=0,
-            command=lambda: print("button_6 clicked"),
-            relief="flat"
-        )
-        self.view_stories_button.place(
-            x=218.0,
-            y=48.0,
-            width=86.0,
-            height=29.27777099609375
-        )
-
+       
         #endregion
 
         #region Result Message box
@@ -377,10 +348,12 @@ class mainGUI:
             self.final_state_label["text"] = self.states[self.final_state]
     
     def queue_state(self):
+        self.set_user_from_entry()
         queued_issues = self.jira.get_issues(assignee = self.user, search_state = self.get_current_initial())
         self.display_issues(queued_issues)
         
     def change_state(self):
+        self.set_user_from_entry()
         if len(self.viewbox.get(0,END)) != 0:
             message = self.get_current_initial() + ' -> ' + self.get_current_final() + "?"
             confirmation = messagebox.askyesno(title = 'Batch Transition Confirmation', 
@@ -403,10 +376,12 @@ class mainGUI:
         self.file_label["text"] = path.name
 
     def queue_stories(self):
-        self.queued_issues_info, self.queued_issues = self.jira.convert_yaml(issues_yml = self.added_stories_filepath)
+        self.set_user_from_entry()
+        self.queued_issues_info, self.queued_issues = self.jira.convert_yaml(issues_yml = self.added_stories_filepath, assignee = self.user)
         self.display_issues(self.queued_issues)
 
     def add_stories(self):
+        self.set_user_from_entry()
         self.jira.upload(self.queued_issues_info, self.queued_issues)
         self.viewbox.delete(0,END)
         self.queued_issues = []
@@ -425,6 +400,9 @@ class mainGUI:
             key = queued_issues[i].key
             summary = queued_issues[i].get_field('summary')
             self.viewbox.insert(i+1, summary + " | " + key)
+    
+    def set_user_from_entry(self):
+        self.user = self.username_entry.get()
     
     def display_message(self, message):
         pass

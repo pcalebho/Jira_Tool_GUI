@@ -74,7 +74,7 @@ class JiraInst():
         except:
             pass
 
-    def convert_yaml(self, issues_yml, validation = True):
+    def convert_yaml(self, issues_yml, assignee, validation = True):
         # parse yaml into list of story, task, bugs
         with open(issues_yml, 'r') as file:
             config = yaml.safe_load(file)
@@ -94,7 +94,7 @@ class JiraInst():
         # validate issues
         if validation:
             v = Validator(self.jira_session)
-            vissues = v.validate(issues)
+            vissues = v.validate(issues, assignee)
         else:
             vissues = issues
 
