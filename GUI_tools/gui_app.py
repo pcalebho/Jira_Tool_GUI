@@ -3,7 +3,6 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 
 from pathlib import Path
-# from tkinter import *
 # Explicit imports to satisfy Flake8
 # from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Listbox
 from tkinter import *
@@ -11,8 +10,9 @@ from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
 from jirasesh import JiraInst
 
-OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ttrol\CodingProjects\Jira_Tool_GUI\GUI_assets\assets\frame0")
+path_parts = Path(__file__).parts
+parent_path = '\\'.join(path_parts[0:len(path_parts)-2])+'/GUI_assets/assets/frame0'
+ASSETS_PATH = Path(parent_path)
 
 def relative_to_assets(path: str) -> Path:
         return ASSETS_PATH / Path(path)
@@ -90,7 +90,6 @@ class mainGUI:
         self.scrollbar.pack( side = RIGHT, fill = Y )
 
         self.viewbox = Listbox(master = view_frame, bd = 0, bg = 'white', height = 16, width = 31, yscrollcommand = self.scrollbar.set)
-
         self.viewbox.pack( side = LEFT, fill = BOTH )
 
         self.scrollbar.config( command = self.viewbox.yview )
