@@ -12,7 +12,7 @@ from tkinter.filedialog import askopenfilename
 from jirasesh import JiraInst
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ttrol\CodingProjects\Jira_Tool_GUI\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\ttrol\CodingProjects\Jira_Tool_GUI\GUI_assets\assets\frame0")
 
 def relative_to_assets(path: str) -> Path:
         return ASSETS_PATH / Path(path)
