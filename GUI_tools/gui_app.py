@@ -259,7 +259,7 @@ class mainGUI:
             image=self.button_image_7,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: self.add_stories,
+            command=self.add_stories,
             relief="flat"
         )
         self.add_stories_button.place(
@@ -375,16 +375,6 @@ class mainGUI:
                 else:
                     self.final_state += 1
             self.final_state_label["text"] = self.states[self.final_state]
-        
-        # if len(self.states[self.init_state]) > 15:
-        #     self.init_state_label["font"] = .1
-        # else:
-        #     self.init_state_label["font"] = .2
-
-        # if len(self.states[self.final_state]) > 15:
-        #     self.final_state_label["font"] = .1
-        # else:
-        #     self.final_state_label["font"] = .2
     
     def queue_state(self):
         queued_issues = self.jira.get_issues(assignee = self.user, search_state = self.get_current_initial())
@@ -413,11 +403,11 @@ class mainGUI:
         self.file_label["text"] = path.name
 
     def queue_stories(self):
-        self.queued_issues = self.jira.convert_yaml(issues_yml = self.added_stories_filepath)
+        self.queued_issues_info, self.queued_issues = self.jira.convert_yaml(issues_yml = self.added_stories_filepath)
         self.display_issues(self.queued_issues)
 
     def add_stories(self):
-        self.jira.upload(self.queued_issues)
+        self.jira.upload(self.queued_issues_info, self.queued_issues)
         self.viewbox.delete(0,END)
         self.queued_issues = []
 
@@ -435,6 +425,9 @@ class mainGUI:
             key = queued_issues[i].key
             summary = queued_issues[i].get_field('summary')
             self.viewbox.insert(i+1, summary + " | " + key)
+    
+    def display_message(self, message):
+        pass
 
     #endregion
 

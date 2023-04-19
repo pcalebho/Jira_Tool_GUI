@@ -101,37 +101,45 @@ class JiraInst():
         #check if issues are empty
         if len(vissues) == 0:
             return
+        
 
         #Add issues to sprint and epic
         results = []
+        other_info = []
         for issue in vissues:
-            sprint_id = issue.pop('sprint').id
-            epic_id = issue.pop('epic').id
-            board = issue.pop('board')
+            info = {}
+            info["sprint_id"] = issue.pop('sprint').id
+            info["epic_id"] = issue.pop('epic').id
+            info["board"] = issue.pop('board')
+            other_info.append(info)
 
             res = self.jira_session.create_issue(issue)
             results.append(res) 
 
-        return results
+        return other_info, results
 
 
-    def upload(self, issues):
-        for issue in issues:
-            sprint_id = issue.pop('sprint').id
-            epic_id = issue.pop('epic').id
-            board = issue.pop('board')
-
-            res = self.jira_session.create_issue(issue)
-
+    def upload(self, issue_info, issues):
+        for i in range(len(issues)):
+            # res = self.jira_session.create_issue(issue)
+            sprint_id = issue_info[i]["sprint_id"]
+            epic_id = issue_info[i]["epic_id"]
+            board = issue_info[i]["board"]
+            res = issues[i]            
+            
             self.jira_session.add_issues_to_sprint(sprint_id=sprint_id,
                                             issue_keys=[res.key])
 
             # the add_issues_to_epic API appears to be deprecated
             try:
-                self.jira_sessiona.add_issues_to_epic(epic_id=epic_id,
+                self.jira_session.add_issues_to_epic(epic_id=epic_id,
                                         issue_keys=[res.key])
             except NotImplementedError:
                 res.update(fields={'parent': {'id': epic_id}})
+                
+    
+    def export_to_yaml(self):
+        pass
 
 if __name__ == "__main__":
     a = JiraInst()

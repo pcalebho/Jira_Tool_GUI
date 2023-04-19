@@ -5,6 +5,7 @@ templates/
 changestate.py
 Figma_Api_Token.txt
 output_gui.py
+test_files/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
