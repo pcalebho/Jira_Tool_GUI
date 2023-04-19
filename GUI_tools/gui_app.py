@@ -28,7 +28,7 @@ class mainGUI:
         self.user = 'Caleb Ho'
         #endregion
 
-        #region  Setting up Backgrouond Aesthetics
+        #region  Setting up Background Aesthetics
         window.resizable(False, False)
         window.configure(bg = "#2EB3DD")
         window.geometry("450x500")
@@ -260,7 +260,7 @@ class mainGUI:
             image=self.button_image_7,
             borderwidth=0,
             highlightthickness=0,
-            command=lambda: print("button_7 clicked"),
+            command=lambda: self.add_stories,
             relief="flat"
         )
         self.add_stories_button.place(
@@ -414,11 +414,13 @@ class mainGUI:
         self.file_label["text"] = path.name
 
     def queue_stories(self):
-        queued_issues = self.jira.upload(issues_yml = self.added_stories_filepath, dry_run = True)
-        self.display_issues(queued_issues)
+        self.queued_issues = self.jira.convert_yaml(issues_yml = self.added_stories_filepath)
+        self.display_issues(self.queued_issues)
 
     def add_stories(self):
-        pass
+        self.jira.upload(self.queued_issues)
+        self.viewbox.delete(0,END)
+        self.queued_issues = []
 
     #region helper methods
     def get_current_final(self):

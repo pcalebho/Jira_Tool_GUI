@@ -74,7 +74,7 @@ class JiraInst():
         except:
             pass
 
-    def convert_yaml(self, issues_yml, dry_run = False, validation = True):
+    def convert_yaml(self, issues_yml, validation = True):
         # parse yaml into list of story, task, bugs
         with open(issues_yml, 'r') as file:
             config = yaml.safe_load(file)
@@ -95,8 +95,8 @@ class JiraInst():
         if validation:
             v = Validator(self.jira_session)
             vissues = v.validate(issues)
-        
-        issues = vissues
+        else:
+            vissues = issues
 
         #check if issues are empty
         if len(vissues) == 0:
@@ -110,23 +110,10 @@ class JiraInst():
             board = issue.pop('board')
 
             res = self.jira_session.create_issue(issue)
-            results.append(res)
+            results.append(res) 
 
-            if not dry_run:
-                self.jira_session.add_issues_to_sprint(sprint_id=sprint_id,
-                                        issue_keys=[res.key])
+        return results
 
-                # the add_issues_to_epic API appears to be deprecated
-                try:
-                    self.jira_sessiona.add_issues_to_epic(epic_id=epic_id,
-                                            issue_keys=[res.key])
-                except NotImplementedError:
-                    res.update(fields={'parent': {'id': epic_id}})   
-
-        if dry_run:
-            return results
-
-        return 0
 
     def upload(self, issues):
         for issue in issues:
@@ -135,7 +122,7 @@ class JiraInst():
             board = issue.pop('board')
 
             res = self.jira_session.create_issue(issue)
-            
+
             self.jira_session.add_issues_to_sprint(sprint_id=sprint_id,
                                             issue_keys=[res.key])
 
