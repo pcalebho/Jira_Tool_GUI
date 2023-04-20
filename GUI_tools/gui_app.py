@@ -6,11 +6,10 @@ from pathlib import Path
 # Explicit imports to satisfy Flake8
 # from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Listbox
 from tkinter import *
-from tkinter import messagebox
+from tkinter import messagebox, Checkbutton
 from tkinter.filedialog import askopenfilename
 from jirasesh import JiraInst
 from PIL import Image, ImageTk
-import tkinter.ttk as ttk
 
 path_parts = Path(__file__).parts
 parent_path = '\\'.join(path_parts[0:len(path_parts)-2])+'/GUI_assets/assets/frame0'
@@ -38,8 +37,8 @@ class mainGUI:
         self.canvas = Canvas(
             window,
             bg = "#2EB3DD",
-            height = 500,
-            width = 450,
+            height = 600,
+            width = 600,
             bd = 0,
             highlightthickness = 0,
             relief = "ridge"
@@ -302,6 +301,39 @@ class mainGUI:
        
         #endregion
 
+        #region Log 0h 
+        log_frame = Frame(height = 70, width = 131, bg = "#531BF3")
+        log_frame.place(x = 39, y = 500)
+
+        self.log_btn_image = PhotoImage(file=relative_to_assets("log0h.png"))
+        
+        self.log_button = Button(
+            master = log_frame,
+            image = self.log_btn_image,
+            borderwidth= 0,
+            highlightthickness=0,
+            relief="flat",
+            background= "#531BF3",
+            command = lambda: self.log_time
+        )
+
+        self.log_button.place(x = 10, y = 20)
+        self.check_value = BooleanVar(window)
+        self.check_value.set(True)
+        self.log_week_from_now = Checkbutton(
+            master=log_frame,
+            onvalue= 0,
+            offvalue= 1,
+            # variable=self.check_value,
+            bg = "#531BF3",
+            text= '1 week\nlater',
+            fg = 'white',
+            command=self.test
+        )
+
+        self.log_week_from_now.place(x = 60, y = 14)
+        #endregion
+
         #region Result Message box
 
         # Results View Box
@@ -385,6 +417,15 @@ class mainGUI:
         self.jira.upload(self.queued_issues_info, self.queued_issues)
         self.viewbox.delete(0,END)
         self.queued_issues = []
+
+    def log_time(self):
+        pass
+        # self.jira.log_hours(0, self.user, )
+    
+    def test(self):
+        pass
+        # self.log_week_from_now.toggle()
+        # print("hi", self.check_value.get())
 
     #region helper methods
     def get_current_final(self):
