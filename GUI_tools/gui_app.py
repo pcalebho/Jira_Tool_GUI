@@ -293,7 +293,7 @@ class mainGUI:
         )
         #endregion
         
-        #region Setup and View
+        #region Name Entry
         name_frame = Frame(height = 72-32, bg = "black",padx = 10, pady= 5)
         name_frame.place(x= 206, y = 32)
         
@@ -313,6 +313,39 @@ class mainGUI:
        
         #endregion
 
+        #region Exporting yaml
+        export_frame = Frame(height = 60, width = 200, bg ="#2EB3DD")
+        export_frame.place(x = 245, y = 80)
+
+        self.view_stories_btn_image = PhotoImage(file=relative_to_assets("ViewStories_button.png"))
+        
+        self.view_stories_button = Button(
+            master = export_frame,
+            image = self.view_stories_btn_image,
+            # borderwidth= 15,
+            highlightthickness=0,
+            relief="flat",
+            background= "#2EB3DD",
+            command = lambda: self.log_time,
+        )
+
+        self.view_stories_button.pack(side=LEFT,anchor=W,padx= 40)
+        
+        self.export_yaml_btn_image = PhotoImage(file=relative_to_assets("ExportYaml_button.png"))
+        self.export_yaml_button = Button(
+            master = export_frame,
+            image = self.export_yaml_btn_image,
+            # borderwidth = 15,
+            highlightthickness=0,
+            relief = "flat",
+            background="#2EB3DD",
+            command = lambda:self.log_time,
+            padx = 20
+        )
+        
+        self.export_yaml_button.pack(side=RIGHT, anchor=E)
+        #endregion
+        
         #region Log 0h 
         log_frame = Frame(height = 70, width = 131, bg = "#531BF3")
         log_frame.place(x = 39, y = 500)
