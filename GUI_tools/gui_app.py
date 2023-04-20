@@ -69,15 +69,27 @@ class mainGUI:
         #View and Setup Background rectangle
                
         view_frame = Frame(master = window, height = 377-110, width = 413-206+150)
-        view_frame.place(x = 206, y = 110)
+        view_frame.place(x = 206, y = 130)
 
         self.scrollbar = Scrollbar(view_frame)
         self.scrollbar.pack( side = RIGHT, fill = Y )
 
-        self.viewbox = Listbox(master = view_frame, bd = 0, bg = 'white', height = 16, width = 31+25, yscrollcommand = self.scrollbar.set)
+        self.viewbox = Listbox(master = view_frame, bd = 0, bg = 'white', height = 24, width = 31+25, yscrollcommand = self.scrollbar.set)
         self.viewbox.pack( side = LEFT, fill = BOTH )
 
         self.scrollbar.config( command = self.viewbox.yview )
+        
+        # Results View Box
+        self.results_message_box = Label(
+            master = window,
+            bg = 'white',
+            bd = 0,
+            height=2,
+            width = 50
+        )
+        
+        self.results_message_box.place(x=207, y = 537.5)
+        
         #endregion
 
         #region State changing stories
@@ -318,34 +330,22 @@ class mainGUI:
         )
 
         self.log_button.place(x = 10, y = 20)
-        self.check_value = BooleanVar(window)
-        self.check_value.set(True)
-        self.log_week_from_now = Checkbutton(
-            master=log_frame,
-            onvalue= 0,
-            offvalue= 1,
-            # variable=self.check_value,
-            bg = "#531BF3",
-            text= '1 week\nlater',
-            fg = 'white',
-            command=self.test
+        
+        self.log_later_btn_image = PhotoImage(file=relative_to_assets("log0h_later.png"))
+        self.log_later_button = Button(
+            master = log_frame,
+            image = self.log_later_btn_image,
+            borderwidth = 0,
+            highlightthickness=0,
+            relief = "flat",
+            background="#531BF3",
+            command = lambda:self.log_time
         )
-
-        self.log_week_from_now.place(x = 60, y = 14)
-        #endregion
-
-        #region Result Message box
-
-        # Results View Box
-        self.canvas.create_rectangle(
-            206.0,
-            403.0,
-            413.0,
-            467.0,
-            fill="#FFFFFF",
-            outline="")
+        
+        self.log_later_button.place(x =70, y = 20)
         
         #endregion
+
     #endregion
     #region Methods
     def inc_dec_state(self, direction, chosen_state):
