@@ -1,6 +1,6 @@
 states:
   - To Do
   - In Progress
-  - Resolved/Completed
+  - Resolved
   - Blocked
   - Did Not Finish

@@ -424,12 +424,12 @@ class mainGUI:
             confirmation = messagebox.askyesno(title = 'Batch Transition Confirmation', 
                     message = message)
             if confirmation:
-                success = self.jira.change_state(self.user, self.states[self.final_state])
+                success = self.jira.change_state(self.user, initial_state = self.states[self.init_state], final_state = self.states[self.final_state])
 
             if not success:
-                self.result_msg = "Error: Transition Failure"
+                self.results_message_box["text"] = "Error: Transition Failure"
             else:
-                self.result_msg = "Success!"
+                self.results_message_box["text"] = "Success!"
 
         self.viewbox.delete(0,END)
 
