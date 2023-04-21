@@ -5,6 +5,8 @@ import pprint
 from copy import deepcopy
 from jira import JIRA
 from validator import Validator
+from pathlib import Path
+import re
 
 class JiraInst():
     #Constructor
@@ -77,10 +79,17 @@ class JiraInst():
         except:
             pass
 
-    def convert_yaml(self, issues_yml, assignee, validation = True):
+    def convert_file(self, issues_file, assignee, validation = True):
+        filepath = Path(issues_file)
+    
         # parse yaml into list of story, task, bugs
-        with open(issues_yml, 'r') as file:
-            config = yaml.safe_load(file)
+        if filepath.suffix == '.yml' or filepath.suffix == '.yaml':
+            with open(issues_yml, 'r') as file:
+                config = yaml.safe_load(file)
+        elif filepath.suffix == '.txt':
+            pass
+        else:
+            return
         
         issues = []
 
@@ -93,7 +102,6 @@ class JiraInst():
             #add error handling
             pass
 
-
         # validate issues
         if validation:
             v = Validator(self.jira_session)
@@ -104,31 +112,35 @@ class JiraInst():
         #check if issues are empty
         if len(vissues) == 0:
             return
-        
 
+        return vissues 
+    
+    def parse_txt_file(self, txt_file, assignee):
+        with open(txt_file, 'r') as file:
+            raw_txt = file.read()
+
+        assignee_escape_char = '[' 
+        action_item_escape_char = '%'
+        project_escape_char = '%'     
+
+        #Search for escape characters
+        action_items_indices = [_.start() for _ in re.finditer(re.escape(action_item_escape_char), raw_txt)]
+        assignee_indices = [_.start() for _ in re.finditer(re.escape(assignee_escape_char), raw_txt)]
+
+
+
+    def upload(self, issues):
         #Add issues to sprint and epic
         results = []
-        other_info = []
-        for issue in vissues:
-            info = {}
-            info["sprint_id"] = issue.pop('sprint').id
-            info["epic_id"] = issue.pop('epic').id
-            info["board"] = issue.pop('board')
-            other_info.append(info)
+        issue_info = []
+        
+        for issue in issues:
+            sprint_id = issue.pop('sprint').id
+            epic_id = issue.pop('epic').id
+            board = issue.pop('board')
 
             res = self.jira_session.create_issue(issue)
-            results.append(res) 
-
-        return other_info, results
-
-
-    def upload(self, issue_info, issues):
-        for i in range(len(issues)):
-            # res = self.jira_session.create_issue(issue)
-            sprint_id = issue_info[i]["sprint_id"]
-            epic_id = issue_info[i]["epic_id"]
-            board = issue_info[i]["board"]
-            res = issues[i]            
+            results.append(res)           
             
             self.jira_session.add_issues_to_sprint(sprint_id=sprint_id,
                                             issue_keys=[res.key])
@@ -146,11 +158,4 @@ class JiraInst():
 
 if __name__ == "__main__":
     a = JiraInst()
-    print(a._states)
-    issue = a.get_issues('Caleb Ho','To Do')
-    # issue = a.get_issues('Caleb Ho','Blocked')
-    b = a.jira_session.issue(id = 'ZTRASH-1746')
-    # print(a.jira_session.fields())
-    print(b.key + ' ' + b.get_field('summary'))
-    # print(a.change_state(assignee = 'Caleb Ho', final_state = 'To Do', issues_2_change = issue))
-    # print(a.change_state(assignee = 'Caleb Ho', final_state = 'Blocked', issues_2_change = issue))
+    a.parse_txt_file(txt_file= 'C:/Users/ttrol/CodingProjects/Jira_Tool_GUI/templates/Ztrash.txt', assignee='Caleb Ho')
