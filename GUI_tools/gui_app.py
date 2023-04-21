@@ -6,7 +6,7 @@ from pathlib import Path
 # Explicit imports to satisfy Flake8
 # from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Listbox
 from tkinter import *
-from tkinter import messagebox, Checkbutton
+from tkinter import messagebox
 from tkinter.filedialog import askopenfilename
 from jirasesh import JiraInst
 from PIL import Image, ImageTk
@@ -326,7 +326,7 @@ class mainGUI:
             highlightthickness=0,
             relief="flat",
             background= "#2EB3DD",
-            command = lambda: self.log_time,
+            command = lambda: self.view_stories()
         )
 
         self.view_stories_button.pack(side=LEFT,anchor=W,padx= 40)
@@ -427,11 +427,33 @@ class mainGUI:
                 success = self.jira.change_state(self.user, initial_state = self.states[self.init_state], final_state = self.states[self.final_state])
 
             if not success:
-                self.results_message_box["text"] = "Error: Transition Failure"
+                self.display_message("Error: Transition Failure", 'green')
             else:
-                self.results_message_box["text"] = "Success!"
-
+                self.display_message('Success!','green')
+        
         self.viewbox.delete(0,END)
+        
+    def view_stories(self):
+        self.reset()
+        self.viewbox.delete(0,END)
+        issue_list = []
+        try:
+            self.results_message_box["text"] = "Working..."
+            stories = self.jira.get_issues(self.user)
+            for status in stories:
+                if len(stories[status]) != 0:
+                    for issue in stories[status]:
+                        issue_list.append(issue)
+        except:
+            self.display_message('Error: Could not get issues','red')
+            return
+        
+        if len(issue_list) != 0:
+            self.display_issues(issue_list)
+            self.display_message("Success!", 'green')
+        else:
+            self.display_message('No issues found', 'red')
+
 
     def browse_file(self):
         filetypes = (('yaml files', '*.yaml'),('yml files', '*.yml'),('All files', '*.*'))
@@ -441,15 +463,27 @@ class mainGUI:
         self.file_label["text"] = path.name
 
     def queue_stories(self):
-        self.set_user_from_entry()
-        self.queued_issues_info, self.queued_issues = self.jira.convert_yaml(issues_yml = self.added_stories_filepath, assignee = self.user)
+        self.reset()
+
+        try:
+            self.queued_issues_info, self.queued_issues = self.jira.convert_yaml(issues_yml = self.added_stories_filepath, assignee = self.user)
+        except:
+            self.display_message("Error: Cannot read stories from file",'red')
+            return
+
         self.display_issues(self.queued_issues)
 
     def add_stories(self):
-        self.set_user_from_entry()
-        self.jira.upload(self.queued_issues_info, self.queued_issues)
-        self.viewbox.delete(0,END)
-        self.queued_issues = []
+        self.reset()
+        
+        try:
+            self.jira.upload(self.queued_issues_info, self.queued_issues)
+            self.viewbox.delete(0,END)
+            self.queued_issues = []
+            self.display_message('Success!', 'green')
+        except:
+            self.display_message('Error uploading issues')
+
 
     def log_time(self):
         pass
@@ -478,8 +512,13 @@ class mainGUI:
     def set_user_from_entry(self):
         self.user = self.username_entry.get()
     
-    def display_message(self, message):
-        pass
+    def reset(self):
+        self.set_user_from_entry()
+        self.display_message('')
+    
+    def display_message(self, message, color = 'black'):
+        self.results_message_box["text"] = message
+        self.results_message_box["fg"] = color
 
     #endregion
 
