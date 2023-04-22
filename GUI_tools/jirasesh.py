@@ -79,35 +79,20 @@ class JiraInst():
         except:
             pass
 
-    def convert_file(self, issues_file, assignee, validation = True):
+    def convert_file(self, issues_file, assignee):
         filepath = Path(issues_file)
     
         # parse yaml into list of story, task, bugs
         if filepath.suffix == '.yml' or filepath.suffix == '.yaml':
-            with open(issues_yml, 'r') as file:
-                config = yaml.safe_load(file)
-        elif filepath.suffix == '.txt':
-            pass
-        else:
-            return
-        
-        issues = []
-
-        try:
-            for issue_cfg in config['issues']:
-                issue = deepcopy(config['defaults'])
-                issue.update(issue_cfg)
-                issues.append(issue)
-        except KeyError as err:
-            #add error handling
-            pass
-
-        # validate issues
-        if validation:
+            issues = parse_yaml_file(txt_file = issues_file)
             v = Validator(self.jira_session)
             vissues = v.validate(issues, assignee)
+        elif filepath.suffix == '.txt':
+            issues = parse_txt_file(txt_file = issues_file)
+            v = Validator(self.jira_session)
+            vissues = v.validate(issues)
         else:
-            vissues = issues
+            return
 
         #check if issues are empty
         if len(vissues) == 0:
@@ -115,32 +100,65 @@ class JiraInst():
 
         return vissues 
     
-    def parse_txt_file(self, txt_file, assignee):
+    def parse_yaml_file(self, convert_file):
+        issues = []
+        with open(issues_file, 'r') as file:
+            config = yaml.safe_load(file)
+
+        for issue_cfg in config['issues']:
+            issue = deepcopy(config['defaults'])
+            issue.update(issue_cfg)
+            issues.append(issue)
+
+        return issues
+
+    def parse_txt_file(self, txt_file):
         with open(txt_file, 'r') as file:
             raw_txt = file.read()
 
-        assignee_escape_char = '[' 
-        action_item_escape_char = '%'
-        project_escape_char = '%'     
+        assignee_escape_char = '['
+        assignee_escape_char_end =']'
+        action_item_escape_char = '%%'
+        project_escape_char = '###'   
+
+        #Defaults to all
+        defaults = {}
+        defaults['sprint'] = 'active'
+        defaults['issuetype'] = 'Story'
+        defaults['description'] = '-'
+        defaults['customfield_10051'] = '-' 
+        defaults['epic'] = None
 
         #Search for escape characters
         action_items_indices = [_.start() for _ in re.finditer(re.escape(action_item_escape_char), raw_txt)]
-        assignee_indices = [_.start() for _ in re.finditer(re.escape(assignee_escape_char), raw_txt)]
+        assignee_indices = ([_.start() for _ in re.finditer(re.escape(assignee_escape_char), raw_txt)], \
+            [_.start() for _ in re.finditer(re.escape(assignee_escape_char_end), raw_txt)])
+        project_indices = [_.start() for _ in re.finditer(re.escape(project_escape_char), raw_txt)]
+        
+        #Parse text
+        project_id = raw_txt[project_indices[0]+len(project_escape_char):project_indices[1]]
+        
+        issues = []
 
+        for i in range(len(action_items_indices)):
+            issue = deepcopy(defaults)
+            summary = raw_txt[action_items_indices[i]+len(action_item_escape_char):assignee_indices[0][i]]
+            assignee = raw_txt[assignee_indices[0][i]+1 : assignee_indices[1][i]]
+            # component = 
+            issue.update({'summary': summary, 'assignee': assignee})
+            issues.append(issue)
 
+        return issues
 
     def upload(self, issues):
         #Add issues to sprint and epic
-        results = []
-        issue_info = []
-        
+       
         for issue in issues:
             sprint_id = issue.pop('sprint').id
             epic_id = issue.pop('epic').id
             board = issue.pop('board')
 
-            res = self.jira_session.create_issue(issue)
-            results.append(res)           
+            res = self.jira_session.create_issue(issue)         
             
             self.jira_session.add_issues_to_sprint(sprint_id=sprint_id,
                                             issue_keys=[res.key])
@@ -158,4 +176,7 @@ class JiraInst():
 
 if __name__ == "__main__":
     a = JiraInst()
-    a.parse_txt_file(txt_file= 'C:/Users/ttrol/CodingProjects/Jira_Tool_GUI/templates/Ztrash.txt', assignee='Caleb Ho')
+    a.parse_txt_file(txt_file= 'C:/Users/ttrol/CodingProjects/Jira_Tool_GUI/templates/Ztrash.txt')
+    a.convert_file(issues_file = 'C:/Users/ttrol/CodingProjects/Jira_Tool_GUI/templates/overhead2.yaml' \
+        , assignee = 'Caleb Ho')
+    

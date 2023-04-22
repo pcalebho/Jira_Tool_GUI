@@ -96,7 +96,7 @@ class Validator(object):
         epic = self.jira.issue(epic_id)
         return epic
 
-    def validate(self, issue_descriptions, assignee):
+    def validate(self, issue_descriptions, assignee = None):
         issues = []
         for desc in issue_descriptions:
             try:
@@ -104,8 +104,11 @@ class Validator(object):
                 issue['project'] = self.validate_project_key(desc['project'])
 
                 # validate optional assignee field
-                # assignee = desc['assignee'] if 'assignee' in desc else 'self'
-                user = self.validate_name_to_single_user(name=assignee)
+                if assignee is None:
+                    user = self.validate_name_to_single_user(name= desc['assignee'])
+                else:
+                    user = self.validate_name_to_single_user(name = assignee)
+                
                 issue['assignee'] = user
 
                 if desc['issuetype'] not in self.issuetypes:
