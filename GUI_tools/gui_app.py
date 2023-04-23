@@ -456,7 +456,7 @@ class mainGUI:
 
 
     def browse_file(self):
-        filetypes = (('yaml files', '*.yaml'),('yml files', '*.yml'),('All files', '*.*'))
+        filetypes = (('yaml files', '*.yaml'),('yml files', '*.yml'),('txt files','.*txt'),('All files', '*.*'))
         f = askopenfilename(title  = 'Open issue file', filetypes = ())
         path = Path(f)
         self.added_stories_filepath = f
@@ -465,8 +465,15 @@ class mainGUI:
     def queue_stories(self):
         self.reset()
 
+        ext = Path(self.added_stories_filepath).suffix
+
         try:
-            self.queued_issues_info, self.queued_issues = self.jira.convert_yaml(issues_yml = self.added_stories_filepath, assignee = self.user)
+            if ext == '.yml' or ext == '.yaml':
+                self.queued_issues = self.jira.convert_file(issues_file= self.added_stories_filepath, assignee = self.user)
+            elif ext == '.txt':
+                self.queued_issues = self.jira.convert_file(issues_file= self.added_stories_filepath, assignee = self.user)
+            else:
+                self.display_message("Error: Wrong file type",'red')
         except:
             self.display_message("Error: Cannot read stories from file",'red')
             return
@@ -477,10 +484,12 @@ class mainGUI:
         self.reset()
         
         try:
-            self.jira.upload(self.queued_issues_info, self.queued_issues)
-            self.viewbox.delete(0,END)
-            self.queued_issues = []
-            self.display_message('Success!', 'green')
+            confirmation = messagebox.askokcancel('Confirmation','Are you sure you would like to upload stories?')
+            if confirmation:
+                self.jira.upload(self.queued_issues)
+                self.viewbox.delete(0,END)
+                self.queued_issues = []
+                self.display_message('Success!', 'green')
         except:
             self.display_message('Error uploading issues')
 
@@ -489,11 +498,6 @@ class mainGUI:
         pass
         # self.jira.log_hours(0, self.user, )
     
-    def test(self):
-        pass
-        # self.log_week_from_now.toggle()
-        # print("hi", self.check_value.get())
-
     #region helper methods
     def get_current_final(self):
         return self.states[self.final_state]
@@ -503,11 +507,11 @@ class mainGUI:
 
     def display_issues(self, queued_issues):
         self.viewbox.delete(0,END)
-
         for i in range(len(queued_issues)):
-            key = queued_issues[i].key
-            summary = queued_issues[i].get_field('summary')
-            self.viewbox.insert(i+1, summary + " | " + key)
+            assignee = queued_issues[i]['assignee_name']
+            summary = queued_issues[i]['summary']
+            str = assignee + ' | ' + summary
+            self.viewbox.insert(i+1, str)
     
     def set_user_from_entry(self):
         self.user = self.username_entry.get()

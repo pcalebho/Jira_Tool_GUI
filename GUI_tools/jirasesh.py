@@ -81,15 +81,15 @@ class JiraInst():
 
     def convert_file(self, issues_file, assignee):
         filepath = Path(issues_file)
-    
+
+        v = Validator(self.jira_session)
+
         # parse yaml into list of story, task, bugs
         if filepath.suffix == '.yml' or filepath.suffix == '.yaml':
-            issues = parse_yaml_file(txt_file = issues_file)
-            v = Validator(self.jira_session)
+            issues = self.parse_yaml_file(yml_file = issues_file)
             vissues = v.validate(issues, assignee)
         elif filepath.suffix == '.txt':
-            issues = parse_txt_file(txt_file = issues_file)
-            v = Validator(self.jira_session)
+            issues = self.parse_txt_file(txt_file = issues_file)
             vissues = v.validate(issues)
         else:
             return
@@ -100,9 +100,9 @@ class JiraInst():
 
         return vissues 
     
-    def parse_yaml_file(self, convert_file):
+    def parse_yaml_file(self, yml_file):
         issues = []
-        with open(issues_file, 'r') as file:
+        with open(yml_file, 'r') as file:
             config = yaml.safe_load(file)
 
         for issue_cfg in config['issues']:
@@ -119,25 +119,28 @@ class JiraInst():
         assignee_escape_char = '['
         assignee_escape_char_end =']'
         action_item_escape_char = '%%'
-        project_escape_char = '###'   
+        project_escape_char = '###'
+        board_escape_char = '^^'
 
         #Defaults to all
         defaults = {}
-        defaults['sprint'] = 'active'
+        defaults['sprint'] = 'future'
         defaults['issuetype'] = 'Story'
         defaults['description'] = '-'
         defaults['customfield_10051'] = '-' 
         defaults['epic'] = None
+        defaults['components'] = ['OTHER']
 
         #Search for escape characters
         action_items_indices = [_.start() for _ in re.finditer(re.escape(action_item_escape_char), raw_txt)]
         assignee_indices = ([_.start() for _ in re.finditer(re.escape(assignee_escape_char), raw_txt)], \
             [_.start() for _ in re.finditer(re.escape(assignee_escape_char_end), raw_txt)])
         project_indices = [_.start() for _ in re.finditer(re.escape(project_escape_char), raw_txt)]
-        
+        board_indices = [_.start() for _ in re.finditer(re.escape(board_escape_char), raw_txt)]
+
         #Parse text
         project_id = raw_txt[project_indices[0]+len(project_escape_char):project_indices[1]]
-        
+        board_id = raw_txt[board_indices[0]+len(board_escape_char):board_indices[1]]
         issues = []
 
         for i in range(len(action_items_indices)):
@@ -145,7 +148,7 @@ class JiraInst():
             summary = raw_txt[action_items_indices[i]+len(action_item_escape_char):assignee_indices[0][i]]
             assignee = raw_txt[assignee_indices[0][i]+1 : assignee_indices[1][i]]
             # component = 
-            issue.update({'summary': summary, 'assignee': assignee})
+            issue.update({'summary': summary, 'assignee': assignee, 'project': project_id, 'board':board_id})
             issues.append(issue)
 
         return issues
@@ -155,8 +158,13 @@ class JiraInst():
        
         for issue in issues:
             sprint_id = issue.pop('sprint').id
-            epic_id = issue.pop('epic').id
+            if issue['epic'] is not None:
+                epic_id = issue.pop('epic').id
+            else:
+                issue.pop('epic')
+                no_epic = True
             board = issue.pop('board')
+            issue.pop('assignee_name')
 
             res = self.jira_session.create_issue(issue)         
             
@@ -164,11 +172,12 @@ class JiraInst():
                                             issue_keys=[res.key])
 
             # the add_issues_to_epic API appears to be deprecated
-            try:
-                self.jira_session.add_issues_to_epic(epic_id=epic_id,
-                                        issue_keys=[res.key])
-            except NotImplementedError:
-                res.update(fields={'parent': {'id': epic_id}})
+            if not no_epic:
+                try:
+                    self.jira_session.add_issues_to_epic(epic_id=epic_id,
+                                            issue_keys=[res.key])
+                except NotImplementedError:
+                    res.update(fields={'parent': {'id': epic_id}})
                 
     
     def export_to_yaml(self):
@@ -176,7 +185,5 @@ class JiraInst():
 
 if __name__ == "__main__":
     a = JiraInst()
-    a.parse_txt_file(txt_file= 'C:/Users/ttrol/CodingProjects/Jira_Tool_GUI/templates/Ztrash.txt')
-    a.convert_file(issues_file = 'C:/Users/ttrol/CodingProjects/Jira_Tool_GUI/templates/overhead2.yaml' \
-        , assignee = 'Caleb Ho')
+    a.parse_yaml_file(yml_file= 'C:/Users/ttrol/CodingProjects/Jira_Tool_GUI/templates/overhead2.yaml')
     

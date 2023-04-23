@@ -93,6 +93,8 @@ class Validator(object):
 
     def validate_epic_id_to_epic(self, epic_id):
         """Currently only epic ID is supported"""
+        if epic_id is None:
+            return None
         epic = self.jira.issue(epic_id)
         return epic
 
@@ -106,8 +108,10 @@ class Validator(object):
                 # validate optional assignee field
                 if assignee is None:
                     user = self.validate_name_to_single_user(name= desc['assignee'])
+                    issue['assignee_name'] = desc['assignee']
                 else:
                     user = self.validate_name_to_single_user(name = assignee)
+                    issue['assignee_name'] = assignee
                 
                 issue['assignee'] = user
 
@@ -123,7 +127,7 @@ class Validator(object):
                 issue['components'] = self.validate_project_components(issue['project'],
                                                                        desc['components'])
                 issue['epic'] = self.validate_epic_id_to_epic(desc['epic'])
-
+                
 
                 if self.prepend_sprint:
                     match = re.search(r"IR\d+", issue['sprint'].name)
