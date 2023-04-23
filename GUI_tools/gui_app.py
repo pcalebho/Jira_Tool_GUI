@@ -449,7 +449,7 @@ class mainGUI:
             return
         
         if len(issue_list) != 0:
-            self.display_issues(issue_list)
+            self.display_issues(issue_list,is_jira_object= True)
             self.display_message("Success!", 'green')
         else:
             self.display_message('No issues found', 'red')
