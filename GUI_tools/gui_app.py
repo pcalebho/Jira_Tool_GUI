@@ -7,9 +7,10 @@ from pathlib import Path
 # from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage, Listbox
 from tkinter import *
 from tkinter import messagebox
-from tkinter.filedialog import askopenfilename
+from tkinter.filedialog import askopenfilename, asksaveasfilename
 from jirasesh import JiraInst
 from PIL import Image, ImageTk
+import yaml
 
 path_parts = Path(__file__).parts
 parent_path = '\\'.join(path_parts[0:len(path_parts)-2])+'/GUI_assets/assets/frame0'
@@ -339,7 +340,7 @@ class mainGUI:
             highlightthickness=0,
             relief = "flat",
             background="#2EB3DD",
-            command = lambda:self.log_time,
+            command = self.export_to_yaml,
             padx = 20
         )
         
@@ -499,6 +500,36 @@ class mainGUI:
     def log_time(self):
         pass
         # self.jira.log_hours(0, self.user, )
+
+    def export_to_yaml(self):
+        self.reset()
+        self.display_message("Working...")
+        try:
+            stories = self.jira.get_issues(self.user)
+            defaults = {'sprint': 'active', 'assignee': self.user, 'issuetype': 'Story'}
+            issues = []
+            for status in stories:
+                if len(stories[status]) != 0:
+                    for issue in stories[status]:
+                        dict = {}
+                        dict['project'] = issue.get_field('project').key
+                        dict['summary'] = issue.get_field('summary')
+                        dict['description'] = issue.get_field('description')
+                        dict['epic'] = issue.get_field('customfield_10014')
+                        temp = issue.get_field('components')
+                        dict['components'] = '[' + temp[0].name + ']'
+                        dict['customfield_10051'] = issue.get_field('customfield_10051')
+                        dict['timetracking'] = {'originalEsimate': issue.get_field('timetracking').originalEstimate}
+                        issues.append(dict)
+            
+            files = [('YAML files','*.yaml')]
+            output = asksaveasfilename(filetypes = files,defaultextension = files)
+
+            with open(output, 'w') as outfile:
+                yaml.dump({'defaults': defaults, 'issues':issues}, outfile)
+            self.display_message('Export Success', 'green')
+        except:
+            self.display_message('Export Failure', 'red')
     
     #region helper methods
     def get_current_final(self):

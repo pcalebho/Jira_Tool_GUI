@@ -183,11 +183,12 @@ class JiraInst():
                 except NotImplementedError:
                     res.update(fields={'parent': {'id': epic_id}})
                 
-    
-    def export_to_yaml(self):
-        pass
 
 if __name__ == "__main__":
     a = JiraInst()
-    a.parse_yaml_file(yml_file= 'C:/Users/ttrol/CodingProjects/Jira_Tool_GUI/templates/overhead2.yaml')
+    data = a.get_issues('Caleb Ho', 'To Do')
+    issue = data[1]
+    b = issue.get_field('description')
+    print(b)
+    # a.parse_yaml_file(yml_file= 'C:/Users/ttrol/CodingProjects/Jira_Tool_GUI/templates/overhead2.yaml')
     
