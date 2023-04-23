@@ -415,7 +415,7 @@ class mainGUI:
     def queue_state(self):
         self.set_user_from_entry()
         queued_issues = self.jira.get_issues(assignee = self.user, search_state = self.get_current_initial())
-        self.display_issues(queued_issues)
+        self.display_issues(queued_issues, is_jira_object = True)
         
     def change_state(self):
         self.set_user_from_entry()
@@ -505,11 +505,16 @@ class mainGUI:
     def get_current_initial(self):
         return self.states[self.init_state]
 
-    def display_issues(self, queued_issues):
+    def display_issues(self, queued_issues, is_jira_object = False):
         self.viewbox.delete(0,END)
+
         for i in range(len(queued_issues)):
-            assignee = queued_issues[i]['assignee_name']
-            summary = queued_issues[i]['summary']
+            if is_jira_object:
+                assignee = self.user
+                summary = queued_issues[i].get_field('summary')
+            else:
+                assignee = queued_issues[i]['assignee_name']
+                summary = queued_issues[i]['summary']
             str = assignee + ' | ' + summary
             self.viewbox.insert(i+1, str)
     
