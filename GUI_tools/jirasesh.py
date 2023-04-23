@@ -158,8 +158,9 @@ class JiraInst():
 
     def upload(self, issues):
         #Add issues to sprint and epic
-       
+
         for issue in issues:
+            no_epic = False
             sprint_id = issue.pop('sprint').id
             if issue['epic'] is not None:
                 epic_id = issue.pop('epic').id

@@ -416,6 +416,7 @@ class mainGUI:
         self.set_user_from_entry()
         queued_issues = self.jira.get_issues(assignee = self.user, search_state = self.get_current_initial())
         self.display_issues(queued_issues, is_jira_object = True)
+        self.display_message('Queuing stories in ' + self.get_current_initial())
         
     def change_state(self):
         self.set_user_from_entry()
@@ -450,7 +451,7 @@ class mainGUI:
         
         if len(issue_list) != 0:
             self.display_issues(issue_list,is_jira_object= True)
-            self.display_message("Success!", 'green')
+            self.display_message("Viewing stories for " + self.user, 'green')
         else:
             self.display_message('No issues found', 'red')
 
@@ -478,7 +479,8 @@ class mainGUI:
             self.display_message("Error: Cannot read stories from file",'red')
             return
 
-        self.display_issues(self.queued_issues)
+        self.display_issues(self.queued_issues, is_jira_object=False)
+        self.display_message('Successfully queued stories for adding', 'green')
 
     def add_stories(self):
         self.reset()
@@ -489,7 +491,7 @@ class mainGUI:
                 self.jira.upload(self.queued_issues)
                 self.viewbox.delete(0,END)
                 self.queued_issues = []
-                self.display_message('Success!', 'green')
+                self.display_message('Successfully added stories', 'green')
         except:
             self.display_message('Error uploading issues')
 
