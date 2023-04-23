@@ -133,8 +133,6 @@ class JiraInst():
 
         #Search for escape characters
         action_items_indices = [_.start() for _ in re.finditer(re.escape(action_item_escape_char), raw_txt)]
-        assignee_indices = ([_.start() for _ in re.finditer(re.escape(assignee_escape_char), raw_txt)], \
-            [_.start() for _ in re.finditer(re.escape(assignee_escape_char_end), raw_txt)])
         project_indices = [_.start() for _ in re.finditer(re.escape(project_escape_char), raw_txt)]
         board_indices = [_.start() for _ in re.finditer(re.escape(board_escape_char), raw_txt)]
 
@@ -143,11 +141,16 @@ class JiraInst():
         board_id = raw_txt[board_indices[0]+len(board_escape_char):board_indices[1]]
         issues = []
 
+
         for i in range(len(action_items_indices)):
             issue = deepcopy(defaults)
-            summary = raw_txt[action_items_indices[i]+len(action_item_escape_char):assignee_indices[0][i]]
-            assignee = raw_txt[assignee_indices[0][i]+1 : assignee_indices[1][i]]
-            # component = 
+            
+            end_summary_i = raw_txt[action_items_indices[i]:].find(assignee_escape_char)+action_items_indices[i]
+            summary = raw_txt[action_items_indices[i]+len(action_item_escape_char):end_summary_i]
+            
+            end_assignee_i = raw_txt[end_summary_i:].find(assignee_escape_char_end)+end_summary_i
+            assignee = raw_txt[end_summary_i+1:end_assignee_i]
+            
             issue.update({'summary': summary, 'assignee': assignee, 'project': project_id, 'board':board_id})
             issues.append(issue)
 
