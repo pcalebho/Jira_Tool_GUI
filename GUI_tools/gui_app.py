@@ -414,29 +414,29 @@ class mainGUI:
             self.final_state_label["text"] = self.states[self.final_state]
     
     def queue_state(self):
-        self.set_user_from_entry()
-        queued_issues = self.jira.get_issues(assignee = self.user, search_state = self.get_current_initial())
-        self.display_issues(queued_issues, is_jira_object = True)
-        self.display_message('Queuing stories in ' + self.get_current_initial())
+        self._set_user_from_entry()
+        queued_issues = self.jira.get_issues(assignee = self.user, search_state = self._get_current_initial())
+        self._display_issues(queued_issues, is_jira_object = True)
+        self._display_message('Queuing stories in ' + self._get_current_initial())
         
     def change_state(self):
-        self.set_user_from_entry()
+        self._set_user_from_entry()
         if len(self.viewbox.get(0,END)) != 0:
-            message = self.get_current_initial() + ' -> ' + self.get_current_final() + "?"
+            message = self._get_current_initial() + ' -> ' + self._get_current_final() + "?"
             confirmation = messagebox.askyesno(title = 'Batch Transition Confirmation', 
                     message = message)
             if confirmation:
                 success = self.jira.change_state(self.user, initial_state = self.states[self.init_state], final_state = self.states[self.final_state])
 
             if not success:
-                self.display_message("Error: Transition Failure", 'green')
+                self._display_message("Error: Transition Failure", 'green')
             else:
-                self.display_message('Success!','green')
+                self._display_message('Success!','green')
         
         self.viewbox.delete(0,END)
         
     def view_stories(self):
-        self.reset()
+        self._reset()
         self.viewbox.delete(0,END)
         issue_list = []
         try:
@@ -447,14 +447,14 @@ class mainGUI:
                     for issue in stories[status]:
                         issue_list.append(issue)
         except:
-            self.display_message('Error: Could not get issues','red')
+            self._display_message('Error: Could not get issues','red')
             return
         
         if len(issue_list) != 0:
-            self.display_issues(issue_list,is_jira_object= True)
-            self.display_message("Viewing stories for " + self.user, 'green')
+            self._display_issues(issue_list,is_jira_object= True)
+            self._display_message("Viewing stories for " + self.user, 'green')
         else:
-            self.display_message('No issues found', 'red')
+            self._display_message('No issues found', 'red')
 
 
     def browse_file(self):
@@ -465,26 +465,45 @@ class mainGUI:
         self.file_label["text"] = path.name
 
     def queue_stories(self):
-        self.reset()
+        self._reset()
+        
+        self.dialog = Toplevel()
+        big_frame = Frame(self.dialog)
+        big_frame.pack(side = TOP, fill='both', expand=True)
+        button_frame = Frame(self.dialog)
+        button_frame.pack(side = BOTTOM)
 
+        label = Label(big_frame, text="Are you uploading to an\nactive or future sprint?")
+        label.place(relx=0.5, rely=0.3, anchor='center')
+
+        option1_button = Button(button_frame, text = 'Active', command = lambda: self._assign_attribute('active'))
+        option1_button.pack(side= LEFT, padx = 10)
+        
+        option2_button = Button(button_frame, text = 'Future', command = lambda: self._assign_attribute('future'))
+        option2_button.pack(side= RIGHT, padx = 10)
+        
         ext = Path(self.added_stories_filepath).suffix
+            
+        self.dialog.transient(window)
+        self.dialog.geometry('200x100')
+        self.dialog.wait_window()
 
         try:
             if ext == '.yml' or ext == '.yaml':
-                self.queued_issues = self.jira.convert_file(issues_file= self.added_stories_filepath, assignee = self.user)
+                self.queued_issues = self.jira.convert_file(issues_file= self.added_stories_filepath, assignee = self.user, search_state= self.sprint_search_state)
             elif ext == '.txt':
-                self.queued_issues = self.jira.convert_file(issues_file= self.added_stories_filepath, assignee = self.user)
+                self.queued_issues = self.jira.convert_file(issues_file= self.added_stories_filepath, assignee = self.user, search_state= self.sprint_search_state)
             else:
-                self.display_message("Error: Wrong file type",'red')
+                self._display_message("Error: Wrong file type",'red')
         except:
-            self.display_message("Error: Cannot read stories from file",'red')
+            self._display_message("Error: Cannot read stories from file",'red')
             return
 
-        self.display_issues(self.queued_issues, is_jira_object=False)
-        self.display_message('Successfully queued stories for adding', 'green')
+        self._display_issues(self.queued_issues, is_jira_object=False)
+        self._display_message('Successfully queued stories for adding', 'green')
 
     def add_stories(self):
-        self.reset()
+        self._reset()
         
         try:
             confirmation = messagebox.askokcancel('Confirmation','Are you sure you would like to upload stories?')
@@ -492,9 +511,9 @@ class mainGUI:
                 self.jira.upload(self.queued_issues)
                 self.viewbox.delete(0,END)
                 self.queued_issues = []
-                self.display_message('Successfully added stories', 'green')
+                self._display_message('Successfully added stories', 'green')
         except:
-            self.display_message('Error uploading issues')
+            self._display_message('Error uploading issues')
 
 
     def log_time(self):
@@ -502,8 +521,8 @@ class mainGUI:
         # self.jira.log_hours(0, self.user, )
 
     def export_to_yaml(self):
-        self.reset()
-        self.display_message("Working...")
+        self._reset()
+        self._display_message("Working...")
         try:
             stories = self.jira.get_issues(self.user)
             defaults = {'sprint': 'active', 'assignee': self.user, 'issuetype': 'Story'}
@@ -527,18 +546,18 @@ class mainGUI:
 
             with open(output, 'w') as outfile:
                 yaml.dump({'defaults': defaults, 'issues':issues}, outfile)
-            self.display_message('Export Success', 'green')
+            self._display_message('Export Success', 'green')
         except:
-            self.display_message('Export Failure', 'red')
+            self._display_message('Export Failure', 'red')
     
     #region helper methods
-    def get_current_final(self):
+    def _get_current_final(self):
         return self.states[self.final_state]
     
-    def get_current_initial(self):
+    def _get_current_initial(self):
         return self.states[self.init_state]
 
-    def display_issues(self, queued_issues, is_jira_object = False):
+    def _display_issues(self, queued_issues, is_jira_object = False):
         self.viewbox.delete(0,END)
 
         for i in range(len(queued_issues)):
@@ -551,16 +570,20 @@ class mainGUI:
             str = assignee + ' | ' + summary
             self.viewbox.insert(i+1, str)
     
-    def set_user_from_entry(self):
+    def _set_user_from_entry(self):
         self.user = self.username_entry.get()
     
-    def reset(self):
-        self.set_user_from_entry()
-        self.display_message('')
+    def _reset(self):
+        self._set_user_from_entry()
+        self._display_message('')
     
-    def display_message(self, message, color = 'black'):
+    def _display_message(self, message, color = 'black'):
         self.results_message_box["text"] = message
         self.results_message_box["fg"] = color
+    
+    def _assign_attribute(self,state):
+        self.sprint_search_state = state
+        self.dialog.destroy()
 
     #endregion
 

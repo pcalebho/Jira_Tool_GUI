@@ -79,17 +79,17 @@ class JiraInst():
         except:
             pass
 
-    def convert_file(self, issues_file, assignee):
+    def convert_file(self, issues_file, assignee, search_state):
         filepath = Path(issues_file)
 
         v = Validator(self.jira_session)
 
         # parse yaml into list of story, task, bugs
         if filepath.suffix == '.yml' or filepath.suffix == '.yaml':
-            issues = self.parse_yaml_file(yml_file = issues_file)
+            issues = self.parse_yaml_file(yml_file = issues_file, search_state= search_state)
             vissues = v.validate(issues, assignee)
         elif filepath.suffix == '.txt':
-            issues = self.parse_txt_file(txt_file = issues_file)
+            issues = self.parse_txt_file(txt_file = issues_file, search_state= search_state)
             vissues = v.validate(issues)
         else:
             return
@@ -100,7 +100,7 @@ class JiraInst():
 
         return vissues 
     
-    def parse_yaml_file(self, yml_file):
+    def parse_yaml_file(self, yml_file,search_state):
         issues = []
         with open(yml_file, 'r') as file:
             config = yaml.safe_load(file)
@@ -108,11 +108,12 @@ class JiraInst():
         for issue_cfg in config['issues']:
             issue = deepcopy(config['defaults'])
             issue.update(issue_cfg)
+            issue.update({'sprint': search_state})
             issues.append(issue)
 
         return issues
 
-    def parse_txt_file(self, txt_file):
+    def parse_txt_file(self, txt_file, search_state):
         with open(txt_file, 'r') as file:
             raw_txt = file.read()
 
@@ -124,7 +125,7 @@ class JiraInst():
 
         #Defaults to all
         defaults = {}
-        defaults['sprint'] = 'future'
+        defaults['sprint'] = search_state
         defaults['issuetype'] = 'Story'
         defaults['description'] = '-'
         defaults['customfield_10051'] = '-' 
