@@ -360,7 +360,7 @@ class mainGUI:
             highlightthickness=0,
             relief="flat",
             background= "#531BF3",
-            command = lambda: self.log_time
+            command = self.log_time
         )
 
         self.log_button.place(x = 10, y = 20)
@@ -372,8 +372,8 @@ class mainGUI:
             borderwidth = 0,
             highlightthickness=0,
             relief = "flat",
-            background="#531BF3",
-            command = lambda:self.log_time
+            background="#531BF3"
+            # command = lambda:self.log_time
         )
         
         self.log_later_button.place(x =70, y = 20)
@@ -517,8 +517,18 @@ class mainGUI:
 
 
     def log_time(self):
-        pass
-        # self.jira.log_hours(0, self.user, )
+        self._reset()
+        issues = self.jira.get_issues(self.user, search_state = 'In Progress')
+        if len(issues) == 0:
+            self._display_message('No In progress issues to log', 'red')
+            return
+        else:
+            try:
+                for issue in issues:
+                    self.jira.log_hours(0, issue)
+                self._display_message('Successfully added 0 hours','green')
+            except:
+                self._display_message('Error logging hours','red')
 
     def export_to_yaml(self):
         self._reset()

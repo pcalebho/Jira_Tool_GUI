@@ -69,8 +69,8 @@ class JiraInst():
         except:
             return False
             
-    def  log_hours(self, hours, user, issue, started = None):
-        hours_JQL = hours + "h"    
+    def  log_hours(self, hours, issue, started = None):
+        hours_JQL = str(hours) + "h"    
         try:
             if started is None:
                 self.jira_session.add_worklog(issue.key, timeSpent = hours_JQL)
