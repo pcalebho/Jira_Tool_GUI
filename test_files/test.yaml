@@ -1,0 +1,18 @@
+defaults:
+    board: "ZTrash"
+    issuetype: Story
+    description: "Meetings for various projects."
+    customfield_10051: "Attend meetings."  # acceptance_criteria
+issues:
+-   project: ZTRASH
+    summary: "Test"
+    components: ["OTHER"]
+    epic: ZTRASH-1743
+    timetracking:
+        originalEstimate: 0h
+-   project: ZTRASH
+    summary: "Test2"
+    components: ["OTHER"]
+    epic: ZTRASH-1743
+    timetracking:
+        originalEstimate: 0h

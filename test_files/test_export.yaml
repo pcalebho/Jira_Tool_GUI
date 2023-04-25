@@ -1,0 +1,114 @@
+defaults:
+  assignee: Caleb Ho
+  issuetype: Story
+  sprint: active
+issues:
+- components: '[MECH]'
+  customfield_10051: update all components based on learnings from Dallas assembly
+    team, review with team, all parts moved to PRQ
+  description: "Finalization of GEN4 EoAT design, capturing all issues that\u2019\
+    ve been discovered during build 1 (4.1)"
+  epic: ULTRA-108
+  project: ULTRA
+  summary: IR86 - Gen 4 EoAT ASM drawing review
+  timetracking:
+    originalEsimate: 5h
+- components: '[MECH]'
+  customfield_10051: update all components based on learnings from Dallas assembly
+    team, review with team, all parts moved to PRQ
+  description: "Finalization of GEN4 EoAT design, capturing all issues that\u2019\
+    ve been discovered during build 1 (4.1)"
+  epic: ULTRA-108
+  project: ULTRA
+  summary: IR86 - Gen 4 EoAT MFG drawing review
+  timetracking:
+    originalEsimate: 5h
+- components: '[MECH]'
+  customfield_10051: Attend meetings.
+  description: Meetings for various projects.
+  epic: ULTRA-218
+  project: ULTRA
+  summary: Caleb Loader Meetings
+  timetracking:
+    originalEsimate: 2h
+- components: '[MECH]'
+  customfield_10051: Attend meetings.
+  description: Meetings for various projects.
+  epic: ULTRA-217
+  project: ULTRA
+  summary: Caleb Unloader Meetings
+  timetracking:
+    originalEsimate: 2h
+- components: '[MECH]'
+  customfield_10051: All manufacturing and assembly drawings are reviewed, updated
+    as needed, and released to Production
+  description: Review all manufacturing and assembly drawings for all components needed
+    for the cell reel design, update drawings as needed, and release to Production
+  epic: ULTRA-3499
+  project: ULTRA
+  summary: Reel Design Drawing Review/Release
+  timetracking:
+    originalEsimate: 4h
+- components: '[MECH]'
+  customfield_10051: '* Ouster and stacklight is mounted and working'
+  description: '* Disassemble existing assembly
+
+    * install ouster sensor
+
+    ** plan for permanent Ouster sensor cable to robot MPD enclosure
+
+    * modify stacklight
+
+    * rewire cameras'
+  epic: ULTRA-3481
+  project: ULTRA
+  summary: Ouster Installation on 3.3
+  timetracking:
+    originalEsimate: 8h
+- components: '[MECH]'
+  customfield_10051: '* Carriage can be brought lower
+
+    * Wear items are replaced'
+  description: '* Replace worn items
+
+    ** Bushings
+
+    ** Slides
+
+    ** Cam follower
+
+    * Dremel/grind down sideplate to let carriage move further down '
+  epic: ULTRA-3217
+  project: ULTRA
+  summary: 'EOAT Tune-up '
+  timetracking:
+    originalEsimate: 12h
+- components: '[MECH]'
+  customfield_10051: Resolved conveyance jam issues - Design review with other disciplines
+    - Ready for assembly and install.
+  description: 'Design effort to upgrade the 3.3 interface for field trial. Explore
+    purchasing internally or using existing parts to make a belted conveyor section.
+
+
+    Check beavertail viability'
+  epic: ULTRA-3458
+  project: ULTRA
+  summary: 3.3 Interface Upgrade Design
+  timetracking:
+    originalEsimate: 24h
+- components: '[DAL-ADMIN & PAPERWORK]'
+  customfield_10051: Complete necessary paperwork.
+  description: This is for non-billable paperwork and admin.
+  epic: BRND-1706
+  project: BRND
+  summary: Caleb Non-Billable Admin
+  timetracking:
+    originalEsimate: 2h
+- components: '[DAL-MEETINGS]'
+  customfield_10051: Attend meetings.
+  description: Meetings for various projects.
+  epic: BRND-1903
+  project: BRND
+  summary: Caleb Non-Billable Meetings
+  timetracking:
+    originalEsimate: 4h
