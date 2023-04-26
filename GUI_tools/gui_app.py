@@ -499,6 +499,9 @@ class mainGUI:
             self._display_message("Error: Cannot read stories from file",'red')
             return
 
+        if len(self.queued_issues) == 0:
+            self._display_message("Error with story validation. Check if fields are correct.", 'red')
+
         self._display_issues(self.queued_issues, is_jira_object=False)
         self._display_message('Successfully queued stories for adding', 'green')
 

@@ -1,7 +1,5 @@
-site: "https://bastiansolutionslab1.atlassian.net"
-email: "cho@bastiansolutions.com"
 defaults:
-    board: "ZTrash"
+    board: " Bastian R&D Overhead:  Scrum Board"
     issuetype: Story
     sprint: future
     assignee: Caleb Ho
@@ -11,12 +9,12 @@ issues:
 -   project: ZTRASH
     summary: "test1"
     components: ["PM"]
-    epic: ZTRASH-1743
+    epic: BRND-1903
     timetracking:
         originalEstimate: 1h
 -   project: ZTRASH
     summary: "test2"
     components: ["PM"]
-    epic: ZTRASH-1743
+    epic: BRND-1903
     timetracking:
         originalEstimate: 0h
