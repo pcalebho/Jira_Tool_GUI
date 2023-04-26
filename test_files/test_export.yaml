@@ -4,6 +4,14 @@ defaults:
   sprint: active
 issues:
 - components: '[MECH]'
+  customfield_10051: '-'
+  description: '-'
+  epic: null
+  project: ULTRA
+  summary: Add countersink holes for M023SB-10094 and associated frame support
+  timetracking:
+    originalEsimate: 1h
+- components: '[MECH]'
   customfield_10051: update all components based on learnings from Dallas assembly
     team, review with team, all parts moved to PRQ
   description: "Finalization of GEN4 EoAT design, capturing all issues that\u2019\
@@ -39,6 +47,18 @@ issues:
   summary: Caleb Unloader Meetings
   timetracking:
     originalEsimate: 2h
+- components: '[MECH]'
+  customfield_10051: '* Design and drawings are complete'
+  description: '* Design for reel management in cell.
+
+    * Reel is necessary to manage good cable management as the robot moves autonomously.
+
+    * Find good post selection.'
+  epic: ULTRA-3499
+  project: ULTRA
+  summary: Design for reel management in cell.
+  timetracking:
+    originalEsimate: 24h
 - components: '[MECH]'
   customfield_10051: All manufacturing and assembly drawings are reviewed, updated
     as needed, and released to Production

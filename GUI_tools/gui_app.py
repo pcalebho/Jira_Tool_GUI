@@ -417,7 +417,7 @@ class mainGUI:
         self._set_user_from_entry()
         queued_issues = self.jira.get_issues(assignee = self.user, search_state = self._get_current_initial())
         self._display_issues(queued_issues, is_jira_object = True)
-        self._display_message('Queuing stories in ' + self._get_current_initial())
+        self._display_message('Queuing stories in ' + '\"' + self._get_current_initial() + '\"')
         
     def change_state(self):
         self._set_user_from_entry()
@@ -466,7 +466,6 @@ class mainGUI:
 
     def queue_stories(self):
         self._reset()
-        
         self.dialog = Toplevel()
         big_frame = Frame(self.dialog)
         big_frame.pack(side = TOP, fill='both', expand=True)
@@ -483,11 +482,11 @@ class mainGUI:
         option2_button.pack(side= RIGHT, padx = 10)
         
         ext = Path(self.added_stories_filepath).suffix
-            
+        self._display_message('Working...')
         self.dialog.transient(window)
         self.dialog.geometry('200x100')
         self.dialog.wait_window()
-
+        
         try:
             if ext == '.yml' or ext == '.yaml':
                 self.queued_issues = self.jira.convert_file(issues_file= self.added_stories_filepath, assignee = self.user, search_state= self.sprint_search_state)
@@ -498,12 +497,14 @@ class mainGUI:
         except:
             self._display_message("Error: Cannot read stories from file",'red')
             return
-
-        if len(self.queued_issues) == 0:
+        try:
+            if len(self.queued_issues) == 0:
+                self._display_message("Error with story validation. Check if fields are correct.", 'red')
+        except:
             self._display_message("Error with story validation. Check if fields are correct.", 'red')
-
+            
         self._display_issues(self.queued_issues, is_jira_object=False)
-        self._display_message('Successfully queued stories for adding', 'green')
+        self._display_message('Ready to add', 'green')
 
     def add_stories(self):
         self._reset()
@@ -589,6 +590,7 @@ class mainGUI:
     def _reset(self):
         self._set_user_from_entry()
         self._display_message('')
+        self.sprint_search_state = ''
     
     def _display_message(self, message, color = 'black'):
         self.results_message_box["text"] = message
