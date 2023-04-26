@@ -1,0 +1,22 @@
+site: "https://bastiansolutionslab1.atlassian.net"
+email: "cho@bastiansolutions.com"
+defaults:
+    board: "ZTrash"
+    issuetype: Story
+    sprint: future
+    assignee: Caleb Ho
+    description: "-"
+    customfield_10051: "-"  # acceptance_criteria
+issues:
+-   project: ZTRASH
+    summary: "test1"
+    components: ["PM"]
+    epic: ZTRASH-1743
+    timetracking:
+        originalEstimate: 1h
+-   project: ZTRASH
+    summary: "test2"
+    components: ["PM"]
+    epic: ZTRASH-1743
+    timetracking:
+        originalEstimate: 0h
