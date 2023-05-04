@@ -3,6 +3,22 @@ defaults:
   issuetype: Story
   sprint: active
 issues:
+- components: '[PM]'
+  customfield_10051: '-'
+  description: '-'
+  epic: BRND-1903
+  project: ZTRASH
+  summary: test2
+  timetracking:
+    originalEsimate: 0h
+- components: '[PM]'
+  customfield_10051: '-'
+  description: '-'
+  epic: BRND-1903
+  project: ZTRASH
+  summary: test1
+  timetracking:
+    originalEsimate: 1h
 - components: '[MECH]'
   customfield_10051: '-'
   description: '-'
@@ -59,16 +75,6 @@ issues:
   summary: Design for reel management in cell.
   timetracking:
     originalEsimate: 24h
-- components: '[MECH]'
-  customfield_10051: All manufacturing and assembly drawings are reviewed, updated
-    as needed, and released to Production
-  description: Review all manufacturing and assembly drawings for all components needed
-    for the cell reel design, update drawings as needed, and release to Production
-  epic: ULTRA-3499
-  project: ULTRA
-  summary: Reel Design Drawing Review/Release
-  timetracking:
-    originalEsimate: 4h
 - components: '[MECH]'
   customfield_10051: '* Ouster and stacklight is mounted and working'
   description: '* Disassemble existing assembly
