@@ -408,7 +408,7 @@ class mainGUI:
     
     def queue_state(self):
         self._set_user_from_entry()
-        queued_issues = self.jira.get_issues(assignee = self.user, search_state = self._get_current_initial())
+        queued_issues = self.jira.get_issues(assignee = self.user, search_state = self._get_current_initial())[self._get_current_initial()]
         self._display_issues(queued_issues, is_jira_object = True)
         self._display_message('Queuing stories in ' + '\"' + self._get_current_initial() + '\"')
         
@@ -516,7 +516,7 @@ class mainGUI:
 
     def log_time(self):
         self._reset()
-        issues = self.jira.get_issues(self.user, search_state = 'In Progress')
+        issues = self.jira.get_issues(self.user, search_state = 'In Progress')['In Progress']
         if len(issues) == 0:
             self._display_message('No In progress issues to log', 'red')
             return
