@@ -42,7 +42,7 @@ class JiraInst():
         else:
             state_in_JQL = '\"' + search_state + '\"'
             query_JQL = 'assignee = \"' + assignee + '\" and sprint in (openSprints(),futureSprints()) and status = ' + state_in_JQL
-            issue_list = self.jira_session.search_issues(query_JQL)
+            issue_list[search_state] = self.jira_session.search_issues(query_JQL)
 
         return issue_list
     
@@ -163,6 +163,7 @@ class JiraInst():
         for issue in issues:
             no_epic = False
             sprint_id = issue.pop('sprint').id
+            epic_id = ''
             if issue['epic'] is not None:
                 epic_id = issue.pop('epic').id
             else:
